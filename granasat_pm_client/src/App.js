@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import { Button , Container} from 'reactstrap';
 import Login from './Login';
-
+import Partfinder from './Partfinder';
 class App extends Component {
   constructor(props) {
     super(props);
@@ -12,9 +12,9 @@ class App extends Component {
 
   render() {
     return (
-     logged 
-        ? <Login></Login>
-        : <Partfinder></Partfinder>     
+     this.state.logged 
+        ? <Partfinder></Partfinder> 
+        : <Login></Login>
     );
   }
 }
