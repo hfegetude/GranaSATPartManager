@@ -2,6 +2,7 @@
   "name": "granasat_pm_client",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://granasat2.ugr.es:9876/",
   "dependencies": {
     "bootstrap": "^4.1.3",
     "react": "^16.6.0",

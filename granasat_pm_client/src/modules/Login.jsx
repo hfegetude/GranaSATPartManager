@@ -18,20 +18,25 @@ class Login extends Component {
       return encodeURIComponent(key) + '=' + encodeURIComponent(formData[key])
     }).join('&')
 
-    fetch('http://192.168.1.24:9876/api/login', {
+    fetch('/api/login', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: encodedForm,
-      credentials: 'same-origin'
+      credentials: 'include'
     })
-    .then(response => {
-      fetch('http://192.168.1.24:9876/api/whoami',{
-        credentials: 'include'
-      }).then((response)=>console.log(response))
-    })
-  }
+    .then(response => response.json()).then((data) => {
+      console.log(data)
+      if(data.status === "OK"){
+        fetch('/api/whoami')
+          .then(response => response.json()).then((data) => {
+          console.log(data)
+          this.props.onLogged(data);
+        })   
+      }
+  })
+}
   render() {
     return (
       <Container className="mt-5">

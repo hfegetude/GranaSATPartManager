@@ -18,16 +18,16 @@ class Partfinder extends Component {
       return encodeURIComponent(key) + '=' + encodeURIComponent(formData[key])
     }).join('&')
 
-    fetch('http://192.168.1.24:9876/api/login', {
+    fetch('/api/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: encodedForm,
-      credentials: 'same-origin'
+      credentials: 'include'
     })
     .then(response => {
-      fetch('http://192.168.1.24:9876/api/whoami',{
+      fetch('/api/whoami',{
         credentials: 'include'
       }).then((response)=>console.log(response))
     })

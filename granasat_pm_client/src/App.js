@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
-import { Button , Container} from 'reactstrap';
-import Login from './Login';
-import Partfinder from './Partfinder';
+import Login from './modules/Login';
+import Partfinder from './modules/Partfinder';
+import CreateUser from './modules/CreateUser';
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {logged: 1};
+    this.state = {logged: false,
+                  user : null};
   }
-
+ 
   render() {
     return (
      this.state.logged 
-        ? <Partfinder></Partfinder> 
-        : <Login></Login>
+        ? <CreateUser></CreateUser> 
+        : <Login onLogged={(user)=>{this.setState({logged: true, user:user})}}></Login>
     );
   }
 }
