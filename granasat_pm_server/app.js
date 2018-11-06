@@ -1,3 +1,5 @@
+var path = require("path")
+
 var express = require('express')
 var app = express()
 
@@ -5,8 +7,8 @@ var helmet = require('helmet')
 app.use(helmet())
 
 
-var HOST = '127.0.0.1';
-var WEBPORT = 8000;
+var HOST = '0.0.0.0';
+var WEBPORT = 9876;
 
 app.use(require('./apiserver.js'));
 

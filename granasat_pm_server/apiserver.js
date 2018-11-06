@@ -13,11 +13,7 @@ var helmet = require('helmet')
 router.use(helmet())
 
 var dbManager = require('./db.js')
-
-var salt = dbManager.createSalt()
-var pass = dbManager.hashPassword("testpass",salt)
-console.log(salt)
-console.log(pass)
+var logger = require('./logger.js')
 
 // CORS Headers
 var corsOptions = {
@@ -26,7 +22,7 @@ var corsOptions = {
     methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
     optionsSuccessStatus: 200
 }
-router.use(cors(corsOptions))
+router.use(cors())
 
 
 ////   Authentication check   ////
@@ -107,18 +103,21 @@ router.get('/api/whoami', isAuthenticated, function(req, res) {
 /*                               API                            */
 /****************************************************************/
 
-
-router.get('/api/measurements', isAuthenticated, function(req, res) {
-    var serialno = req.query.device
-    var session = req.query.session
-    var initdate = moment.unix(req.query.initDate)
-    var enddate = moment.unix(req.query.endDate)
+//USER CREATION
+router.post('/api/user', isAuthenticated, function(req, res) {
     var user = req.user
-
-    res.json({
-        ok: 1
-    })
-
+    var data = req.body
+    dbManager.postUsers(user, data).then((id) => {
+        res.status(200).json({
+            status: "OK"
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
 });
+
 
 module.exports = router;
