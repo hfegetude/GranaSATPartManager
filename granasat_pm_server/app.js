@@ -14,7 +14,7 @@ app.use(require('./apiserver.js'));
 
 // Default index webpage
 app.get('*', function(req, res, next) {
-    res.sendFile(path.join(__dirname + '/app/index.html'))
+    res.sendFile(path.join(__dirname + '../granasat_pm_client/build/index.html')) 
 });
 
 // Run 
