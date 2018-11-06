@@ -31,7 +31,8 @@ dbManager.prototype.hashPassword = function(password, salt) {
 /*                     PASSPORT AND AUTH                        */
 /****************************************************************/
 
-dbManager.prototype.checkPassportPassword = function(username, password, done) {
+dbManager.prototype.checkPassportPassword = function(req, username, password, done) {
+    console.log(req.body)
     db.query('SELECT salt FROM users WHERE username = ?', [username], (error, results, fields) => {
         if (error) logger.error(error);
         if (!results.length) return done(null, false);

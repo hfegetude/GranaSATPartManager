@@ -14,10 +14,10 @@ router.use(helmet())
 
 var dbManager = require('./db.js')
 
-// var salt = dbManager.createSalt()
-// var pass = dbManager.hashPassword("testpass",salt)
-// console.log(salt)
-// console.log(pass)
+var salt = dbManager.createSalt()
+var pass = dbManager.hashPassword("testpass",salt)
+console.log(salt)
+console.log(pass)
 
 // CORS Headers
 var corsOptions = {
@@ -59,7 +59,8 @@ router.use(passport.session());
 
 passport.use('login', new LocalStrategy({
     usernameField: 'username',
-    passwordField: 'password'
+    passwordField: 'password',
+    passReqToCallback: true
 }, dbManager.checkPassportPassword.bind(dbManager)));
 
 passport.serializeUser(function(user, done) {
