@@ -4,8 +4,9 @@
   "private": true,
   "proxy": "http://granasat2.ugr.es:9876/",
   "dependencies": {
+    "@trendmicro/react-sidenav": "^0.4.5",
     "bootstrap": "^4.1.3",
-    "react": "^16.6.0",
+    "react": "^16.6.1",
     "react-dom": "^16.6.0",
     "react-icons": "^3.2.2",
     "react-scripts": "2.1.1",

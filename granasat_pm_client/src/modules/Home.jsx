@@ -29,14 +29,17 @@ export default class Home extends React.Component {
     onItemSelection = (arg) => {
         this.setState({ selectedPath: arg.path })
     }
+    handle(arg){
+        console.log(arg)
+    }
  
     render() {
  
         return (
-            <div style={navStyle}>
-                <SideNav defaultSelectedPath="1">
-                    <Nav style={titleStyle}> Home </Nav>
-                    <Nav id="1" style={navEntryStyle}>
+            <div  style={navStyle}>
+                <SideNav defaultSelectedPath="1" onItemSelection={this.handle}>
+                    <Nav style={titleStyle} > Home </Nav>
+                    <Nav id="1" style={navEntryStyle} >
                         <FaSearch></FaSearch> &emsp; Search part
                     </Nav>
                     <Nav id="2" style={navEntryStyle}>
@@ -50,8 +53,6 @@ export default class Home extends React.Component {
                     </Nav>
                 </SideNav>
             </div>
-            
-        
         )
     }
 }
