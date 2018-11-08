@@ -127,3 +127,24 @@ if(url.includes("avnet")){
             });
     }
 }
+
+if(url.includes("lcsc")){
+    var code = document.querySelector("#demo > div.notice-item > ul > li:nth-child(3) > div.item-right.reg").textContent.trim()
+    console.log(code)
+    if(code){
+        document.querySelector("#demo > div.notice-item > h2")
+        .insertAdjacentHTML('beforeend', '<button id="copyExcel">COPY EXCEL</button>');
+        new ClipboardJS('#copyExcel', {
+            text: function(trigger) {
+                var codefab = document.querySelector("#demo > div.notice-item > ul > li:nth-child(2) > div.item-right.reg").textContent.trim();
+                var fab = document.querySelector("#demo > div.notice-item > ul > li:nth-child(1) > a").textContent.trim()
+                var description = document.querySelector("#demo > div.notice-item > ul > li:nth-child(7) > div.item-right.reg").textContent.trim();
+                var price = document.querySelector("#product_details > div.details-content.maxw_1500 > div.content > div.content-right > div.cart-box > div:nth-child(1) > div > div:nth-child(2) > div.computed.mb-20 > span.bold").textContent.trim().replace("€","").replace("$","").replace(",",".");
+                var minquantity =document.querySelector("#product_details > div.details-content.maxw_1500 > div.content > div.content-right > div.cart-box > div:nth-child(3) > table > tbody > tr:nth-child(1) > td.tdQty.semi > a").textContent.trim().slice(0,1)
+                var datasheet= document.querySelector("#demo > div.notice-item > ul > li:nth-child(6) > div.item-right.reg > a").href
+                var img = document.querySelector("#imgBox > div.swiper-container.gallery-top.swiper-container-horizontal > div > div.swiper-no-swiping.swiper-slide.swiper-slide-active > img").src
+                return ["LCSC",url,code,codefab,fab,description,price,minquantity, host, datasheet, img].join("\t");
+              }
+            });
+    }
+}
