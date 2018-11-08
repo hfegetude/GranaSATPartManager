@@ -1,0 +1,33 @@
+{
+  "manifest_version": 2,
+
+  "name": "RS Exporter",
+  "description": "Copy product from RS to Excel",
+  "version": "1.0",
+
+
+  "browser_action": {
+   "default_icon": "icon.png"
+  },
+
+  "icons": { "16": "icon.png",
+           "48": "icon.png",
+          "128": "icon.png" },
+
+  "content_scripts": [
+  {
+    "matches": ["https://es.rs-online.com/*","https://www.mouser.es/*","https://eu.mouser.com/*","http://es.farnell.com/*","https://es.farnell.com/*","https://www.arrow.com/*","https://www.digikey.es/*","https://www.avnet.com/*"],
+    "css": ["mystyles.css"],
+    "js": ["clipboard.js", "providersExtension.js"],
+    "run_at": "document_end"
+  }
+],
+
+"background": {
+  "scripts": ["background.js"],
+  "persistent": false
+},
+
+"permissions": ["tabs", "https://es.rs-online.com/*","https://www.mouser.es/*","http://es.farnell.com/*","https://www.arrow.com/*","https://www.digikey.es/*","https://www.avnet.com/*"]
+
+}
