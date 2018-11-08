@@ -3,7 +3,7 @@ import { Button, Form, FormGroup, Label, Input, FormText , Alert} from 'reactstr
 
 
 
-class AddPart extends React.Component {
+class AddVendor extends React.Component {
 constructor(props) {
     super(props);
     this.state = {name:null, 
