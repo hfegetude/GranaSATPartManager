@@ -2,33 +2,11 @@ import React , { Component } from 'react';
 import { SideNav, Nav } from 'react-sidenav' ;
 import {FaWrench, FaUsers, FaMicrochip, FaSearch} from 'react-icons/fa';
 
- 
-const navStyle ={
-    background: "#303641",
-    color: "#8d97ad",
-    fontSize: "1em",
-    letterSpacing: "2px",
-    width: "240px",
-    height:"100vh",
-    lineHeight: "22px"
-}
-
-const navEntryStyle={
-    fontWeight: "bold",
-    fontSize: "1.2em"
-}
-const theme = {
-    selectionColor: "#C51162",
-    hoverBgColor: "#f5f5f5",
-    selectionBgColor: "#f5f5f5",
-  };
-const titleStyle= {
-    textAlign: "center"
-}
 class LateralNav extends Component {
     constructor(props) {
         super(props);
     }
+    
     render() {
  
         return (

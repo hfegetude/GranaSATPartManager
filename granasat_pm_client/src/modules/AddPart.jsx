@@ -84,15 +84,15 @@ constructor(props) {
         }
         <FormGroup>
           <Label for="partName">Part name</Label>
-          <Input type="text" name="partName" value={this.state.name} id="partName" placeholder="An Arduino" onChange={(e)=>{this.setState({name:e.target.value})}}/>
+          <Input type="text" name="partName" value={this.state.name} id="partName" placeholder="" onChange={(e)=>{this.setState({name:e.target.value})}}/>
         </FormGroup>
         <FormGroup>
           <Label for="description">Part Description</Label>
-          <Input type="text" name="description" value={this.state.description} id="description" placeholder="is good" onChange={(e)=>{this.setState({description:e.target.value})}}/>
+          <Input type="text" name="description" value={this.state.description} id="description" placeholder="" onChange={(e)=>{this.setState({description:e.target.value})}}/>
         </FormGroup>
         <FormGroup>
           <Label for="manufacturer">Manufacturer</Label>
-          <Input type="text" name="manufacturer" value={this.state.manufacturer}  id="manufacturer" placeholder="Granasat" onChange={(e)=>{this.setState({manufacturer:e.target.value})}}/>
+          <Input type="text" name="manufacturer" value={this.state.manufacturer}  id="manufacturer" placeholder="" onChange={(e)=>{this.setState({manufacturer:e.target.value})}}/>
         </FormGroup>
         <FormGroup>
           <Label for="datasheet">Datasheet</Label>
