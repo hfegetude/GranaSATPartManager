@@ -1,5 +1,6 @@
-var crypto = require('crypto')
-var logger = require('./logger.js')
+const crypto = require('crypto')
+const logger = require('./logger.js')
+const fs = require('fs');
 
 
 var db = require('./dbConnect')
@@ -69,7 +70,7 @@ dbManager.prototype.getPassportUser = function (id, done) {
 /*                      COMMON API USERS                        */
 /****************************************************************/
 
-dbManager.prototype.postUsers = function (user, data, companyManager) {
+dbManager.prototype.postUsers = function (user, data) {
     return new Promise((resolve, reject) => {
 
         if (user.user_group == 1) {
@@ -90,5 +91,176 @@ dbManager.prototype.postUsers = function (user, data, companyManager) {
         }
     })
 }
+
+/****************************************************************/
+/*                      COMMON API PARTS                        */
+/****************************************************************/
+
+dbManager.prototype.getPart = function (user, data) {
+    return new Promise((resolve, reject) => {
+        db.query("SELECT * FROM parts WHERE name LIKE ? ",
+            ["%"+data.name+"%"],
+            function (error, results, fields) {
+                if (error) {
+                    logger.error(error)
+                    return reject("Part search error.")
+                } else {
+                    return resolve(results)
+                }
+            }) 
+    })
+}
+
+dbManager.prototype.postPart = function (user, data) {
+    return new Promise((resolve, reject) => {
+        if(data.name == null || (data.name && data.name.length == 0)){
+            data.name = null
+            return reject("Creation error: probably name must be filled.")
+        }
+        db.query("INSERT INTO parts (name,description,manufacturer,creator) VALUES (?,?,?,?)",
+            [data.name, data.description, data.manufacturer,user.id],
+            function (error, results, fields) {
+                if (error) {
+                    logger.error(error)
+                    return reject("Creation error: probably name in use.")
+                } else {
+                    data.id = results.insertId
+                    return resolve(data)
+                }
+            }) 
+    })
+}
+
+dbManager.prototype.postPartFiles = function (user, id, datasheet, altium) {
+    return new Promise((resolve, reject) => {
+        // TODO: accept only some extensions
+        if (datasheet) {
+            var datasheetname = id + ".pdf"
+            fs.writeFile('datasheets/' + datasheetname, datasheet.data, (err) => {  
+                 if (err){
+                     logger.error("Datasheet not saved")
+                } else {
+                    db.query('UPDATE parts SET datasheet=? WHERE id=?', [datasheetname,id], function(error, results, fields) {
+                        if (error) logger.error(error);
+                    })
+                }
+
+            });
+        }
+
+        if (altium) {
+            var altiumname = id + "_" +altium.name
+            fs.writeFile('altiumfiles/' + altiumname, altium.data, (err) => {  
+                 if (err){
+                     logger.error("Altium Files not saved")
+                } else {
+                    db.query('UPDATE parts SET altiumfiles=? WHERE id=?', [altiumname,id], function(error, results, fields) {
+                        if (error) logger.error(error);
+                    })
+                }
+
+            });
+        }
+
+        resolve()
+    })
+}
+
+/****************************************************************/
+/*                      COMMON API VENDORS                      */
+/****************************************************************/
+
+dbManager.prototype.getVendor = function (user, data) {
+    return new Promise((resolve, reject) => {
+        db.query("SELECT * FROM vendors WHERE name LIKE ? ",
+            ["%"+data.name+"%"],
+            function (error, results, fields) {
+                if (error) {
+                    logger.error(error)
+                    return reject("Vendor search error.")
+                } else {
+                    return resolve(results)
+                }
+            }) 
+    })
+}
+
+dbManager.prototype.postVendor = function (user, data) {
+    return new Promise((resolve, reject) => {
+        if(data.name == null || (data.name && data.name.length == 0)){
+            data.name = null
+            return reject("Creation error: probably name must be filled.")
+        }
+        db.query("INSERT INTO vendors (name,url) VALUES (?,?)",
+            [data.name, data.url],
+            function (error, results, fields) {
+                if (error) {
+                    logger.error(error)
+                    return reject("Creation error: probably name in use.")
+                } else {
+                    data.id = results.insertId
+                    return resolve(data)
+                }
+            }) 
+    })
+}
+
+/****************************************************************/
+/*                      COMMON API STOR.PLACES                  */
+/****************************************************************/
+
+dbManager.prototype.getStoragePlaces = function (user) {
+    return new Promise((resolve, reject) => {
+        db.query("SELECT * FROM storageplaces",
+            function (error, results, fields) {
+                if (error) {
+                    logger.error(error)
+                    return reject("Storage places search error.")
+                } else {
+                    return resolve(results)
+                }
+            }) 
+    })
+}
+
+/****************************************************************/
+/*                      COMMON API STOCK                        */
+/****************************************************************/
+
+dbManager.prototype.getStock = function (user, data) {
+    return new Promise((resolve, reject) => {
+        db.query("SELECT * FROM stock WHERE part=? AND vendor=?",
+            [parseInt(data.part),parseInt(data.vendor)],
+            function (error, results, fields) {
+                if (error) {
+                    logger.error(error)
+                    return reject("Stock search error.")
+                } else {
+                    return resolve(results.map(e => {
+                        e.part = data.part,
+                        e.vendor = data.vendor
+                        return e
+                    }))
+                }
+            }) 
+    })
+}
+
+dbManager.prototype.postStock = function (user, data) {
+    return new Promise((resolve, reject) => {
+        db.query("INSERT INTO stock (part,vendor,storageplace,quantity,url,creator) VALUES (?,?,?,?,?,?)",
+            [data.part.id,data.vendor.id,data.storageplace.id,data.quantity,data.url,user.id],
+            function (error, results, fields) {
+                if (error) {
+                    logger.error(error)
+                    return reject("Vendor search error.")
+                } else {
+                    data.id = results.insertId
+                    return resolve(data)
+                }
+            }) 
+    })
+}
+
 
 module.exports = new dbManager();

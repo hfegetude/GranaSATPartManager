@@ -4,6 +4,7 @@ var moment = require('moment')
 var express = require('express')
 var router = express.Router();
 
+const fileUpload = require('express-fileupload');
 var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser')
 var session = require('express-session')
@@ -37,6 +38,7 @@ var isAuthenticated = function(req, res, next) {
 }
 
 ////    Initialize the api authentication method    ////
+router.use(fileUpload());
 router.use(cookieParser());
 router.use(bodyParser.urlencoded({
     extended: true
@@ -100,7 +102,7 @@ router.get('/api/whoami', isAuthenticated, function(req, res) {
 });
 
 /****************************************************************/
-/*                               API                            */
+/*                          API USERS                           */
 /****************************************************************/
 
 //USER CREATION
@@ -118,6 +120,169 @@ router.post('/api/user', isAuthenticated, function(req, res) {
         })
     });
 });
+
+/****************************************************************/
+/*                          API PARTS                           */
+/****************************************************************/
+
+//PART SEARCH
+router.get('/api/part', isAuthenticated, function(req, res) {
+    var user = req.user
+    var data = req.query
+    dbManager.getPart(user, data).then((results) => {
+        res.status(200).json({
+            results: results,
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
+});
+
+//PART CREATION
+router.post('/api/part', isAuthenticated, function(req, res) {
+    var user = req.user
+    var data = req.body
+    dbManager.postPart(user, data).then((inserted) => {
+        res.status(200).json({
+            status: "OK",
+            inserted:inserted
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
+});
+
+//PART FILES
+router.post('/api/part/files/:id', isAuthenticated, function(req, res) {
+    var user = req.user
+    var id = req.params.id
+   
+    var files = []
+
+    if (Array.isArray(req.files.file)) {
+        files = req.files.file
+    }else{
+        files = [req.files.file]
+    }
+    var datasheet = files.filter(e => e.name.startsWith("datasheet_"))
+    datasheet = (datasheet.length) ? datasheet[0] : null
+
+    var altium = files.filter(e => e.name.startsWith("altium_"))
+    altium = (altium.length) ? altium[0] : null
+
+    dbManager.postPartFiles(user, id, datasheet, altium).then((id) => {
+        res.status(200).json({
+            status: "OK",
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
+});
+
+
+/****************************************************************/
+/*                          API VENDORS                         */
+/****************************************************************/
+
+//PART SEARCH
+router.get('/api/vendor', isAuthenticated, function(req, res) {
+    var user = req.user
+    var data = req.query
+    dbManager.getVendor(user, data).then((results) => {
+        res.status(200).json({
+            results: results,
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
+});
+
+//PART CREATION
+router.post('/api/vendor', isAuthenticated, function(req, res) {
+    var user = req.user
+    var data = req.body
+    dbManager.postVendor(user, data).then((inserted) => {
+        res.status(200).json({
+            status: "OK",
+            inserted:inserted
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
+});
+
+/****************************************************************/
+/*                          API STOR. PLACES                     */
+/****************************************************************/
+
+//PART SEARCH
+router.get('/api/storageplaces', isAuthenticated, function(req, res) {
+    var user = req.user
+    
+    dbManager.getStoragePlaces(user).then((results) => {
+        res.status(200).json({
+            results: results,
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
+});
+
+
+/****************************************************************/
+/*                          API STOCK                           */
+/****************************************************************/
+
+//PART SEARCH
+router.get('/api/stock', isAuthenticated, function(req, res) {
+    var user = req.user
+    var data = req.query
+    dbManager.getStock(user, data).then((results) => {
+        res.status(200).json({
+            results: results,
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
+});
+
+router.post('/api/stock', isAuthenticated, function(req, res) {
+    var user = req.user
+    var data = req.body
+    dbManager.postStock(user, data).then((inserted) => {
+        res.status(200).json({
+            status: "OK",
+            inserted:inserted
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
+});
+
 
 
 module.exports = router;
