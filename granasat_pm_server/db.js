@@ -222,7 +222,7 @@ dbManager.prototype.getStoragePlaces = function (user) {
             }) 
     })
 }
-
+ 
 /****************************************************************/
 /*                      COMMON API STOCK                        */
 /****************************************************************/
@@ -246,14 +246,56 @@ dbManager.prototype.getStock = function (user, data) {
     })
 }
 
+dbManager.prototype.searchStock = function (user, data) {
+    return new Promise((resolve, reject) => {
+        if(data.search && data.search.length){
+            db.query('SELECT * FROM stockcomplete WHERE \
+            (name LIKE ? \
+            OR description LIKE ? \
+            OR manufacturer LIKE ? \
+            OR vendorreference LIKE ?)',
+            new Array(4).fill("%" + data.search + "%"),
+        function (error, results, fields) {
+            if (error) {
+                logger.error(error)
+                return reject("Vendor search error.")
+            } else {
+                return resolve(results)
+            }
+        }) 
+        }else{
+            return resolve([])
+        }
+    })
+}
+
 dbManager.prototype.postStock = function (user, data) {
     return new Promise((resolve, reject) => {
-        db.query("INSERT INTO stock (part,vendor,storageplace,quantity,url,creator) VALUES (?,?,?,?,?,?)",
-            [data.part.id,data.vendor.id,data.storageplace.id,data.quantity,data.url,user.id],
+        var t = this
+        db.query("INSERT INTO stock (part,vendor,storageplace,url,creator) VALUES (?,?,?,?,?)",
+            [data.part.id,data.vendor.id,data.storageplace.id,data.url,user.id],
             function (error, results, fields) {
                 if (error) {
                     logger.error(error)
                     return reject("Vendor search error.")
+                } else {
+                    data.id = results.insertId
+                    t.updateStock(user,{stock:{id:results.insertId},quantity:data.quantity}).then(()=>{
+                        return resolve(data)
+                    })
+                }
+            }) 
+    })
+}
+
+dbManager.prototype.updateStock = function (user, data) {
+    return new Promise((resolve, reject) => {
+        db.query("INSERT INTO transactions (user,stock,quantity) VALUES (?,?,?)",
+            [user.id,data.stock.id,data.quantity],
+            function (error, results, fields) {
+                if (error) {
+                    logger.error(error)
+                    return reject("Transaction insert error.")
                 } else {
                     data.id = results.insertId
                     return resolve(data)
@@ -261,6 +303,7 @@ dbManager.prototype.postStock = function (user, data) {
             }) 
     })
 }
+
 
 
 module.exports = new dbManager();
