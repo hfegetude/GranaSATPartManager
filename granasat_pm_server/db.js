@@ -141,6 +141,28 @@ dbManager.prototype.postPart = function (user, data) {
     })
 }
 
+dbManager.prototype.updatePart = function (user, data) {
+    return new Promise((resolve, reject) => {
+        var t = this
+
+        if(data.name == null || (data.name && data.name.length == 0)){
+            data.name = null
+            return reject("Creation error: probably name must be filled.")
+        }
+
+        db.query("UPDATE parts SET name=?,description=?,manufacturer=?,lastUpdated=? WHERE id=?",
+            [data.name, data.description, data.manufacturer,user.id,data.id],
+            function (error, results, fields) {
+                if (error) {
+                    logger.error(error)
+                    return reject("Creation error: probably name in use.")
+                } else {
+                    return resolve()
+                }
+            }) 
+    })
+}
+
 dbManager.prototype.postPartFiles = function (user, id, datasheet, altium) {
     return new Promise((resolve, reject) => {
         // TODO: accept only some extensions
@@ -258,7 +280,7 @@ dbManager.prototype.getStock = function (user, data) {
 
 dbManager.prototype.searchStock = function (user, data) {
     return new Promise((resolve, reject) => {
-        if(data.search && data.search.length){
+        if(data.search && data.search !== ""){
             db.query('SELECT * FROM stockcomplete WHERE \
             (name LIKE ? \
             OR description LIKE ? \
@@ -291,6 +313,16 @@ dbManager.prototype.postStock = async function (user, data) {
                     return reject("Vendor search error.")
                 } else {
                     data.id = results.insertId
+
+                    if (data.image) {
+                        var imagename = data.image.split("/")
+                        imagename = data.id + "." + imagename[imagename.length-1].split(".")[1]
+                        db.query('UPDATE stock SET image=? WHERE id=?', [imagename,data.id])
+                        axios({'url' : data.image, 'responseType' : 'stream'}).then( response =>{
+                            response.data.pipe(fs.createWriteStream('images/' + imagename))
+                        })
+                    }
+
                     t.updateStock(user,{stock:{id:results.insertId},quantity:data.quantity}).then(()=>{
                         return resolve(data)
                     })

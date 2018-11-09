@@ -1,3 +1,4 @@
+var path = require('path');
 var cors = require('cors')
 var moment = require('moment')
 
@@ -66,6 +67,15 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(dbManager.getPassportUser);
+
+/****************************************************************/
+/*                      STATIC                                  */
+/****************************************************************/
+
+router.use('/static', express.static(path.join(__dirname, '../granasat_pm_client/build/static')));
+router.use('/images', express.static('images'));
+router.use('/datasheets', express.static('datasheets'));
+router.use('/altiumfiles', isAuthenticated, express.static('altiumfiles'));
 
 /****************************************************************/
 /*                      API USER SESSION                        */
@@ -149,6 +159,22 @@ router.post('/api/part', isAuthenticated, function(req, res) {
         res.status(200).json({
             status: "OK",
             inserted:inserted
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
+});
+
+//PART MODIFY
+router.put('/api/part', isAuthenticated, function(req, res) {
+    var user = req.user
+    var data = req.body
+    dbManager.updatePart(user, data).then(() => {
+        res.status(200).json({
+            status: "OK",
         })
     }).catch((error) => {
         if (error) logger.error(error);
@@ -257,7 +283,7 @@ router.get('/api/stock', isAuthenticated, function(req, res) {
     var data = req.query
 
     var f = null
-    if (data.search) {
+    if (data.hasOwnProperty("search")) {
         f = dbManager.searchStock
     }else{
         f = dbManager.getStock
