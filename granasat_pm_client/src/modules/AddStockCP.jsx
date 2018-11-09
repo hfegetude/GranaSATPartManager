@@ -5,7 +5,7 @@ import { Col, Row, Button, Form, FormGroup, Label, Input, FormText , Alert} from
 import {Fragment,Typeahead,Control} from 'react-bootstrap-typeahead'
 import Select from 'react-select'
 
-
+import TransactionModal from './TransactionModal'
 import clipboardPasteProxy from '../utils/PasteProxy'
 import {createPart,createVendor,getStock,createStock} from '../utils/apiUtilities' 
 
@@ -29,14 +29,16 @@ constructor(props) {
                 foundstock:null,
 
                 clipboardData: null,
-                createdStock:null
+                createdStock:null,
+
+                showTransactionModal: false,
             };
   
     this.partFinderTimeout = null
     this.vendorFinderTimeout = null
     }
 
-
+    
     componentDidMount(){
       this.pasteListener= clipboardPasteProxy((data)=>{
         this.setState({
@@ -49,9 +51,10 @@ constructor(props) {
           nameCoincidences: null,
           vendorCoincidences:null,
           quantity: 0,
-          createdStock:null
+          createdStock:null,
+          showTransactionModal: false,
+
         },()=>{
-          console.log(this.state.clipboardData)
           this.partFinderTimeout = null
           this.vendorFinderTimeout = null
           this.partFinder(this.state.searchName,true)
@@ -168,7 +171,7 @@ constructor(props) {
   }
 
   insertStock(){
-    createStock(this.state.selectedPart,this.state.selectedVendor,this.state.clipboardData.url,parseInt(this.state.quantity),this.state.storageplace.value).then((response) => {
+    createStock(this.state.selectedPart,this.state.selectedVendor,this.state.clipboardData.vendorCode,this.state.clipboardData.url,parseInt(this.state.quantity),this.state.storageplace.value).then((response) => {
       if (response.data.error) {
         this.setState({error:response.data.error})
       }else{
@@ -261,16 +264,27 @@ constructor(props) {
           }}></Select>
         </FormGroup>
 
-        <Button onClick={this.insertStock.bind(this)}>Create Stock</Button> :
+        <Button size="sm" color="success" onClick={this.insertStock.bind(this)}>Create Stock</Button>
 
         </div>
         : null} 
 
        
         
-        {(this.state.foundstock) ? 
+        {(this.state.foundstock) ?
+        <div>
             <p>Stock already available. Found: {this.state.foundstock.quantity} units @ {this.state.foundstock.storageplace.name}  (<a href={this.state.foundstock.url}>Link</a>) </p>
+            <Button size="sm" color="success" onClick={()=>{this.setState({showTransactionModal:true})}}>Modify Available Stock</Button>
+        </div>
+            : null}
+
+        {(this.state.showTransactionModal) ? 
+        <TransactionModal stock={this.state.foundstock} onDone={()=>{
+          this.setState({showTransactionModal:false})
+          this.checkStock()
+        }}></TransactionModal>
         : null}
+                    
 
       </Form>
     );

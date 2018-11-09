@@ -39,7 +39,8 @@ if(url.includes("mouser")){
                 var price = document.querySelector("#pdpPricingAvailability > div.panel-body > div.div-table.pdp-pricing-table > div.div-table-row > .row > div:nth-child(2) > span").textContent.replace("€","").replace(",",".").trim()
                 var minquantity = document.querySelector("#pdpPricingAvailability > div.panel-body > div.div-table.pdp-pricing-table > div.div-table-row > .row > div:nth-child(1)").textContent.trim()
                 var datasheet =document.querySelector("#pdp-datasheet_0").href
-                var img=document.querySelector("#imglink > img").src
+                var img=document.querySelector("#imglink > img")
+                img = (img) ? img.src : ''
                 return ["Mouser",url,code,codefab,fab,description,price,minquantity, host, datasheet,img].join("\t");
               }
             });
