@@ -8,7 +8,7 @@ class Login extends Component {
   constructor(props) {
     super(props);
     this.handleMenu = this.handleMenu.bind(this);
-    this.state = {selectedScreen: null};
+    this.state = {selectedScreen: "createstock"};
   }
   
   handleMenu(e){

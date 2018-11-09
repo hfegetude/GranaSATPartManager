@@ -51,6 +51,7 @@ constructor(props) {
           quantity: 0,
           createdStock:null
         },()=>{
+          console.log(this.state.clipboardData)
           this.partFinderTimeout = null
           this.vendorFinderTimeout = null
           this.partFinder(this.state.searchName,true)
@@ -189,11 +190,22 @@ constructor(props) {
 
         }
 
-
-        <FormGroup>
-          <Label for="partName">Part name</Label>
-          <Input disabled={true} type="text" name="partName" value={(this.state.searchName) ? this.state.searchName : ""} id="partName" onChange={e => this.partFinder(e.target.value)}/>
-        </FormGroup>
+        <Row>
+        
+          <Col md="9">
+            <FormGroup>
+            <Label for="partName">Part name</Label>
+            <Input disabled={true} type="text" name="partName" value={(this.state.searchName) ? this.state.searchName : ""} id="partName" onChange={e => this.partFinder(e.target.value)}/>
+          </FormGroup>
+          </Col>
+          { (this.state.clipboardData && this.state.clipboardData.image) ? 
+                <Col md="3">
+                  <img src={this.state.clipboardData.image} className="img-fluid"></img>
+                </Col>
+          : null
+          }
+        </Row>
+        
         
         {(this.state.nameCoincidences && this.state.nameCoincidences.length) ? 
           this.state.nameCoincidences.map(e => <p onClick={c => {this.partSelect(e)}} key={e.id}><b>{e.name}</b> {e.manufacturer} <small>{e.description}</small></p>)
