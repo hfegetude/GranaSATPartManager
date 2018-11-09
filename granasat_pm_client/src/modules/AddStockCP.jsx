@@ -2,12 +2,14 @@ import React from 'react';
 import axios from 'axios'
 
 import { Col, Row, Button, Form, FormGroup, Label, Input, FormText , Alert} from 'reactstrap';
-import {Fragment,Typeahead,Control} from 'react-bootstrap-typeahead'
 import Select from 'react-select'
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFilePdf } from '@fortawesome/free-solid-svg-icons'
 
 import TransactionModal from './TransactionModal'
 import clipboardPasteProxy from '../utils/PasteProxy'
-import {createPart,createVendor,getStock,createStock} from '../utils/apiUtilities' 
+import {getPart,createPart,createVendor,getStock,createStock, getPart} from '../utils/apiUtilities' 
 
 class AddStock extends React.Component {
 constructor(props) {
@@ -90,11 +92,7 @@ constructor(props) {
       }
 
       this.partFinderTimeout = setTimeout(()=>{
-        axios.get('/api/part', {
-          params: {
-            name: this.state.searchName
-          }
-        }).then((data) => {
+        getPart(this.state.searchName).then((data) => {
           if (autoselect && data.data.results.length === 1) {
             this.partSelect(data.data.results[0])
           }else{
@@ -127,7 +125,7 @@ constructor(props) {
     }
 
   createNotFoundPart(){
-    createPart(this.state.clipboardData.manufacturerCode,this.state.clipboardData.description,this.state.clipboardData.manufacturer).then(response => {
+    createPart(this.state.clipboardData.manufacturerCode,this.state.clipboardData.description,this.state.clipboardData.manufacturer,this.state.clipboardData.datasheet).then(response => {
       this.partSelect(response.data.inserted)
     })
   }
@@ -171,7 +169,7 @@ constructor(props) {
   }
 
   insertStock(){
-    createStock(this.state.selectedPart,this.state.selectedVendor,this.state.clipboardData.vendorCode,this.state.clipboardData.url,parseInt(this.state.quantity),this.state.storageplace.value).then((response) => {
+    createStock(this.state.selectedPart,this.state.selectedVendor,this.state.clipboardData.vendorCode,this.state.clipboardData.url,parseInt(this.state.quantity),this.state.storageplace.value,this.state.clipboardData.image).then((response) => {
       if (response.data.error) {
         this.setState({error:response.data.error})
       }else{
@@ -216,6 +214,9 @@ constructor(props) {
 
         {(!this.state.selectedPart && this.state.nameCoincidences && this.state.nameCoincidences.length === 0) ? 
             <p>Part not found: <b>{this.state.clipboardData.manufacturerCode}</b> ({this.state.clipboardData.manufacturer})<br/>
+            {(this.state.clipboardData.datasheet) ? 
+            <div>Found PDF:  <a href={this.state.clipboardData.datasheet}><FontAwesomeIcon icon={faFilePdf} /> Datasheet</a><br/></div>
+            : null}
             <small>{this.state.clipboardData.description}</small><br/>
             <Button size="sm" color="success" onClick={this.createNotFoundPart.bind(this) }>Create</Button></p>
           : null}
@@ -250,6 +251,7 @@ constructor(props) {
           <Label for="stockurl">Stock URL</Label>
           <Input disabled={true} type="text" name="stockurl" id="stockurl" value={(this.state.clipboardData.url) ? this.state.clipboardData.url : ""}/>
         </FormGroup>
+
 
         <FormGroup>
           <Label for="quantity">Quantity</Label>
