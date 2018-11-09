@@ -251,11 +251,18 @@ router.get('/api/storageplaces', isAuthenticated, function(req, res) {
 /*                          API STOCK                           */
 /****************************************************************/
 
-//PART SEARCH
+//STOCK FIND
 router.get('/api/stock', isAuthenticated, function(req, res) {
     var user = req.user
     var data = req.query
-    dbManager.getStock(user, data).then((results) => {
+
+    var f = null
+    if (data.search) {
+        f = dbManager.searchStock
+    }else{
+        f = dbManager.getStock
+    }
+    f(user, data).then((results) => {
         res.status(200).json({
             results: results,
         })
@@ -267,10 +274,28 @@ router.get('/api/stock', isAuthenticated, function(req, res) {
     });
 });
 
+//STOCK CREATE
 router.post('/api/stock', isAuthenticated, function(req, res) {
     var user = req.user
     var data = req.body
     dbManager.postStock(user, data).then((inserted) => {
+        res.status(200).json({
+            status: "OK",
+            inserted:inserted
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
+});
+
+//STOCK UPDATE
+router.put('/api/stock', isAuthenticated, function(req, res) {
+    var user = req.user
+    var data = req.body
+    dbManager.updateStock(user, data).then((inserted) => {
         res.status(200).json({
             status: "OK",
             inserted:inserted

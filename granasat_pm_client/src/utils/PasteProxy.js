@@ -16,8 +16,8 @@ function clipboardPasteProxy(cb){
                 unitPrice: pasteData[6],
                 minUnit: pasteData[7],
                 vendorUrl: pasteData[8],
-                datasheet: (pasteData[9]) ? pasteData[9] : null,
-                image: (pasteData[10]) ? pasteData[10] : null,
+                datasheet: (pasteData[9].length) ? pasteData[9] : null,
+                image: (pasteData[10].length) ? pasteData[10] : null,
              });
         }
         

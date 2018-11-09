@@ -1,11 +1,20 @@
 
 import axios from 'axios'
 
-export const createPart = (name,description,manufacturer) => {
+export const getPart = (search) => {
+    return axios.get('/api/part', {
+        params: {
+          name: search
+        }
+      })
+}
+
+export const createPart = (name,description,manufacturer,datasheet) => {
     return axios.post('/api/part', {
         name: name,
         description: description,
         manufacturer: manufacturer,
+        datasheet:datasheet
       })
 }
 
@@ -25,13 +34,30 @@ export const getStock = (part,vendor) => {
     })
 }
 
-export const createStock = (part,vendor,url,quantity,storageplace) => {
+export const searchStock = (search) => {
+    return axios.get('/api/stock', {
+        params: {
+            search: search,
+        }
+    })
+}
+
+export const createStock = (part,vendor,vendorreference,url,quantity,storageplace,image) => {
     return axios.post('/api/stock', 
           {vendor: vendor,
           part: part,
           url:url,
           quantity:quantity,
-          storageplace:storageplace})
+          storageplace:storageplace,
+          vendorreference:vendorreference,
+          image: image
+        })
+}
+
+export const modifyStock = (stock,quantity) => {
+    return axios.put('/api/stock', 
+          {stock: stock,
+            quantity: quantity})
 }
 
 
