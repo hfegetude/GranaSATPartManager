@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { Col, Row, Nav, NavLink, NavItem,Navbar,NavbarBrand, Button, Form, FormGroup, Label, Input, Container } from 'reactstrap';
 import AddStock from './AddStockCP'
+import AddStockM from './AddStock'
 import AddPart from './AddPart'
+
 
 
 class Login extends Component {
@@ -31,7 +33,7 @@ class Login extends Component {
             <NavLink href="#" onClick={e => this.setState({selectedScreen:"createstock"})}>Create Stock</NavLink>
           </NavItem>
           <NavItem>
-            <NavLink href="#">Another Link</NavLink>
+            <NavLink href="#" onClick={e => this.setState({selectedScreen:"createstockManual"})}>Create Stock Manual</NavLink>
           </NavItem>
           <NavItem>
             <NavLink href="#">Disabled Link</NavLink>
@@ -41,6 +43,7 @@ class Login extends Component {
           <Col md="9">
             {(this.state.selectedScreen === "createpart") ? <AddPart></AddPart> : null}
             {(this.state.selectedScreen === "createstock") ? <AddStock></AddStock> : null}
+            {(this.state.selectedScreen === "createstockManual") ? <AddStockM></AddStockM> : null}
           </Col>
         </Row>
       </div>

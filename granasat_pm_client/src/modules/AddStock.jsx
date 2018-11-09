@@ -14,19 +14,18 @@ constructor(props) {
                 searchVendor: null,
                 stockurl:null,
                 storageplaces:[],
-                
                 error: null,
-
                 nameCoincidences: null,
                 selectedPart:null,
-
                 vendorCoincidences:null,
                 selectedVendor:null,
-
                 quantity: 0,
-
                 creationStatus: 0,
-                foundstock:null
+                foundstock:null,
+                createPartName: null,
+                createPartDescription: null,
+                createPartManufacturer: null
+
             };
 
     this.partFinderTimeout = null
@@ -62,7 +61,6 @@ constructor(props) {
     if (this.partFinderTimeout) {
       clearTimeout(this.partFinderTimeout)
     }
-
     this.partFinderTimeout = setTimeout(()=>{
       axios.get('/api/part', {
         params: {
@@ -132,6 +130,23 @@ constructor(props) {
       })
     }
   }
+  createPart(){
+    const formData = {
+      name: this.state.createPartName,
+      description: this.state.createPartDescription,
+      manufacturer: this.state.createPartManufacturer,
+    }
+    
+
+    axios.post('/api/part', formData)
+    .then((data)=>{
+      console.log(data)
+    })
+    .catch((error)=>{
+      console.log(error)
+    })
+  }
+  
 
   includeStock(){
     if (this.state.selectedVendor && this.state.selectedPart) {
@@ -153,7 +168,7 @@ constructor(props) {
 
   render() {
     return (
-      <Form autoComplete="off">
+      <Form autoComplete ="off">
         {(this.state.error) 
                 ?   <Alert color="danger">
                         {this.state.error}
@@ -161,65 +176,45 @@ constructor(props) {
                 : null
 
         }
-
-        <FormGroup>
-          <Label for="partName">Part name</Label>
-          <Input type="text" name="partName" value={(this.state.searchName) ? this.state.searchName : ""} id="partName" onChange={e => this.partFinder(e)}/>
-        </FormGroup>
-        
-        {(this.state.nameCoincidences && this.state.nameCoincidences.length) ? 
+        <div>
+          <h2>From part</h2>
+          <FormGroup>
+            <Label for="partName">Part name</Label>
+            <Input type="text" name="partName" value={(this.state.searchName) ? this.state.searchName : ""} id="partName" onChange={e => this.partFinder(e)}/>
+          </FormGroup>
+          {(this.state.nameCoincidences && this.state.nameCoincidences.length && this.state.searchName) ? 
           this.state.nameCoincidences.map(e => <p onClick={c => this.partSelect(e)} key={e.id}><b>{e.name}</b> {e.manufacturer} <small>{e.description}</small></p>)
           : null}
         
         {(this.state.selectedPart) ? 
             <p>Selected: <b>{this.state.selectedPart.name}</b> {this.state.selectedPart.manufacturer} <small>{this.state.selectedPart.description}</small></p>
         : null}
+      </div>
 
-        {/* <FormGroup>
+      <div>
+        <h2>Create part</h2>
+        <FormGroup>
+          <Label for="partName">Part name</Label>
+          <Input type="text" name="partName" value={this.state.createPartName} id="partName" placeholder="" onChange={(e)=>{this.setState({createPartName:e.target.value})}}/>
+        </FormGroup>
+        <FormGroup>
           <Label for="description">Part Description</Label>
-          <Input disabled={this.state.namecoincidences && this.state.namecoincidences.length} type="text" name="description" value={(this.state.description) ? this.state.description : ""} id="description" onChange={(e)=>{this.setState({description:e.target.value})}}/>
+          <Input type="text" name="description" value={this.state.createPartDescription} id="description" placeholder="" onChange={(e)=>{this.setState({createPartDescription:e.target.value})}}/>
         </FormGroup>
         <FormGroup>
           <Label for="manufacturer">Manufacturer</Label>
-          <Input disabled={this.state.namecoincidences && this.state.namecoincidences.length} type="text" name="manufacturer" value={(this.state.manufacturer) ? this.state.manufacturer : ""}  id="manufacturer" onChange={(e)=>{this.setState({manufacturer:e.target.value})}}/>
-        </FormGroup> */}
+          <Input type="text" name="manufacturer" value={this.state.createPartManufacturer}  id="manufacturer" placeholder="" onChange={(e)=>{this.setState({createPartManufacturer:e.target.value})}}/>
+        </FormGroup>
+      </div>
+
 
        
        
 
-        <FormGroup>
-          <Label for="vendor">Vendor</Label>
-          <Input type="text" name="vendor" id="vendor" value={(this.state.searchVendor) ? this.state.searchVendor : ""} onChange={e => this.vendorFinder(e)} />
-        </FormGroup>
 
-        {(this.state.vendorCoincidences && this.state.vendorCoincidences.length) ? 
-          this.state.vendorCoincidences.map(e => <p onClick={c => this.vendorSelect(e)} key={e.id}><b>{e.name}</b> <small>{e.URL}</small></p>)
-          : null}
-        
-        {(this.state.selectedVendor) ? 
-            <p>Selected: <b>{this.state.selectedVendor.name}</b> <small>{this.state.selectedVendor.URL}</small></p>
-        : null}
-        
-        {(this.state.creationStatus === 1) ? 
-          <div><FormGroup>
-          <Label for="stockurl">Stock URL</Label>
-          <Input type="text" name="stockurl" id="stockurl" value={(this.state.stockurl) ? this.state.stockurl : ""} onChange={(e)=>{this.setState({stockurl:e.target.value})}}/>
-        </FormGroup>
-
-        <FormGroup>
-          <Label for="quantity">Quantity</Label>
-          <Input type="number" step="1" name="quantity" id="quantity" value={(this.state.quantity) ? this.state.quantity : ""} onChange={(e)=>{this.setState({quantity:e.target.value})}}/>
-        </FormGroup>
-
-        <FormGroup>
-          <Label for="storageplaces">Storage Place</Label>
-          <Input type="select" name="storageplaces" id="storageplaces" value={(this.state.storageplace) ? this.state.storageplace : ""} onChange={(e)=>{this.setState({storageplace:e.target.value})}}>
-            {this.state.storageplaces.map((e,index) => <option key={e.id}>{e.name} {(e.description) ?  "(" + e.description + ")" : null}</option>)}
-          </Input>
-        </FormGroup></div>
-        : null}
         
         
+        <Button onClick={this.createPart.bind(this)}>Add part</Button> :
         {(this.state.creationStatus === 0) ?
         <Button onClick={this.checkStock.bind(this)}>Check</Button> :
         (this.state.creationStatus === 1) ?
