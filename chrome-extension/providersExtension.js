@@ -36,7 +36,7 @@ if(url.includes("mouser")){
                 var codefab = document.querySelector("#spnManufacturerPartNumber").textContent.trim()
                 var fab = document.querySelector("#lnkManufacturerName").textContent.trim()
                 var description = document.querySelector("#spnDescription").textContent.trim()
-                var price = document.querySelector("#pdpPricingAvailability > div.panel-body > div.div-table.pdp-pricing-table > div:nth-child(2) > div > div:nth-child(2) > span").textContent.trim()
+                var price = document.querySelector("#pdpPricingAvailability > div.panel-body > div.div-table.pdp-pricing-table > div.div-table-row > .row > div:nth-child(2)").textContent.replace("€","").replace(",",".").trim()
                 var minquantity =document.querySelector("#pdpPricingAvailability > div.panel-body > div.div-table.pdp-pricing-table > div:nth-child(2) > div > div.col-xs-4.text-right.div-table-col-highlight > div > label").children[0].textContent.trim()
                 var datasheet =document.querySelector("#pdp-datasheet_0").href
                 var img=document.querySelector("#imglink > img").src
