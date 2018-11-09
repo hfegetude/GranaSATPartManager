@@ -3,7 +3,10 @@ import { UncontrolledTooltip, Form, FormGroup, Label, Input, Table} from 'reacts
 import {searchStock} from '../utils/apiUtilities' 
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFilePdf } from '@fortawesome/free-solid-svg-icons'
+import { faFilePdf,faLink, faFileArchive, faCog, faHandRock } from '@fortawesome/free-solid-svg-icons'
+
+import TransactionModal from './TransactionModal'
+import PartModifyModal from './PartModifyModal'
 
 
 class SearchStock extends React.Component {
@@ -11,28 +14,28 @@ constructor(props) {
     super(props);
       this.state = {
         search: "",
-        results: []
+        results: [],
+        showTransactionModal:false,
+        transactionstock: null,
+        showModifyModal:false,
+        modifypart:null
       };
 
       this.searchTimeout = null
   }
 
-  handleSearch(s){
-    this.setState({search:s})
-    if (this.state.search.length) {
-      
-      if (this.searchTimeout) {
-        clearTimeout(this.searchTimeout)
-      }
-
-      this.searchTimeout = setTimeout(()=>{
-        searchStock(s).then((data) => {
-          console.log(data.data)
-          this.setState({results:data.data.results}) 
-        })
-      },500)  
-    }
-    
+  handleSearch(s,delay=100){
+    this.setState({search:s},()=>{      
+        if (this.searchTimeout) {
+          clearTimeout(this.searchTimeout)
+        }
+  
+        this.searchTimeout = setTimeout(()=>{
+          searchStock(s).then((data) => {
+            this.setState({results:data.data.results}) 
+          })
+        },delay)  
+    }) 
   }
 
   render() {
@@ -41,7 +44,7 @@ constructor(props) {
         <Form autoComplete="off">
         <FormGroup>
           <Label for="search">Search</Label>
-          <Input type="text" name="search" value={this.state.search} id="search" placeholder="" onChange={(e)=>{this.handleSearch(e.target.value)}}/>
+          <Input autofocus="true" type="text" name="search" value={this.state.search} id="search" placeholder="" onChange={(e)=>{this.handleSearch(e.target.value)}}/>
         </FormGroup>
       </Form>
 
@@ -55,7 +58,6 @@ constructor(props) {
             <th>Vendor</th>
             <th>Storage</th>
             <th>Qty.</th>
-            <th>Datasheet</th>
             <th></th>
           </tr>
         </thead>
@@ -63,7 +65,7 @@ constructor(props) {
         {this.state.results.map(r => {
           r.tooltipOpen = false
           return <tr key={r.id}>
-                    <td className="align-middle">{(r.image) ? <img src={"images/" + r.image} className="img-fluid"></img>: null}</td>
+                    <td className="align-middle">{(r.image) ? <img style={{maxWidth:"70px"}} className="img-thumbnail" src={"images/" + r.image} className="img-fluid"></img>: null}</td>
                     <th className="align-middle" scope="row">{r.name}</th>
                     <td className="align-middle"><small>{r.description}</small></td>
                     <td className="align-middle">{r.manufacturer}</td>
@@ -75,8 +77,13 @@ constructor(props) {
                     </UncontrolledTooltip>
                     :null}
                     <td className="align-middle">{r.quantity}</td>
-                    <td className="align-middle"><a href={"datasheets/" + r.datasheet}><FontAwesomeIcon icon={faFilePdf} /></a></td>
-                    <td className="align-middle"><a href={r.url}>Link</a></td>
+                    <td className="align-middle">
+                      {(r.datasheet) ? <a href={"datasheets/" + r.datasheet}><FontAwesomeIcon icon={faFilePdf} /></a> : null }
+                      {(r.altiumfiles) ? <a href={"altiumfiles/" + r.altiumfiles}><FontAwesomeIcon icon={faFileArchive} /></a>: null}
+                      {(r.url) ? <a href={r.url}><FontAwesomeIcon icon={faLink} /></a> : null }
+                      <a href="#" onClick={() => {this.setState({showTransactionModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faHandRock} /></a>
+                      <a href="#" onClick={() => {this.setState({showModifyModal:true,modifypart:{id:r.idpart,manufacturer:r.manufacturer,name:r.name,description:r.description}})}}><FontAwesomeIcon icon={faCog} /></a>
+                      </td>
 
                   </tr>
                   // # id, name, description, manufacturer, altiumfiles, datasheet, storagename, storagedescription, storageimage, vendorname, vendorreference, quantity, url
@@ -85,6 +92,18 @@ constructor(props) {
         })}
         </tbody>
       </Table>
+      {(this.state.showTransactionModal) ? 
+        <TransactionModal stock={this.state.transactionstock} onDone={()=>{
+          this.setState({showTransactionModal:false})
+          this.handleSearch(this.state.search,0)
+        }}></TransactionModal>
+      : null}
+      {(this.state.showModifyModal) ? 
+        <PartModifyModal part={this.state.modifypart} onDone={()=>{
+          this.setState({showModifyModal:false})
+          this.handleSearch(this.state.search,0)
+        }}></PartModifyModal>
+      : null}
       </div>
       
     );

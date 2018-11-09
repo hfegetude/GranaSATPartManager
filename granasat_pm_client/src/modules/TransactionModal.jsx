@@ -9,7 +9,7 @@ class TransactionModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      quantity: 2
+      quantity: 1
     };
 
     this.numberStyle = {
@@ -24,6 +24,9 @@ class TransactionModal extends Component {
       fontWeight: "500",
       fontSize: "2rem",
     }
+
+    this.toggle = this.props.onDone;
+
   }
 
   handleTransaction(p){
@@ -35,9 +38,9 @@ class TransactionModal extends Component {
   render() {
     return (
       <Modal isOpen={true} toggle={this.toggle} className={this.props.className}>
-          <ModalHeader toggle={this.toggle}>Modal title</ModalHeader>
+          <ModalHeader toggle={this.toggle}>{this.props.stock.name} <small>({this.props.stock.vendorname})</small></ModalHeader>
           <ModalBody>
-            <Input style={this.numberStyle} type="number" step="1" value={this.state.quantity} onChange={e => this.setState({quantity:e.target.value})}/>
+            <Input autofocus="true" style={this.numberStyle} type="number" step="1" value={this.state.quantity} onChange={e => this.setState({quantity:e.target.value})}/>
           </ModalBody>
         
           <ModalFooter className="d-flex justify-content-center">

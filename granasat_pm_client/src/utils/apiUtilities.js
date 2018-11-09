@@ -18,6 +18,15 @@ export const createPart = (name,description,manufacturer,datasheet) => {
       })
 }
 
+export const modifyPart = (id,name,description,manufacturer) => {
+    return axios.put('/api/part', {
+        id: id,
+        name: name,
+        description: description,
+        manufacturer: manufacturer,
+      })
+}
+
 export const createVendor = (name,url) => {
     return axios.post('/api/vendor', {
         name: name,

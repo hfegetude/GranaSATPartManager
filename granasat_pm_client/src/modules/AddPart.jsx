@@ -2,18 +2,32 @@ import React from 'react';
 import { Button, Form, FormGroup, Label, Input, FormText , Alert} from 'reactstrap';
 import clipboardPasteProxy from '../utils/PasteProxy'
 
+import {createPart,modifyPart} from '../utils/apiUtilities' 
+
 
 class AddPart extends React.Component {
 constructor(props) {
     super(props);
-    this.state = {name:null, 
-                description:null,
-                manufacturer:null,
-                datasheet: null,
-                altiumFile: null,
-                error: null
-            };
+
+    if (this.props.part) {
+      this.state = {name:this.props.part.name, 
+        description:this.props.part.description,
+        manufacturer:this.props.part.manufacturer,
+        datasheet: null,
+        altiumFile: null,
+        error: null
+      }
+    }else{
+      this.state = {name:null, 
+          description:null,
+          manufacturer:null,
+          datasheet: null,
+          altiumFile: null,
+          error: null
+      }
     }
+  }
+    
     componentDidMount(){
       this.pasteListener= clipboardPasteProxy((data)=>{
         this.setState({
@@ -27,29 +41,14 @@ constructor(props) {
     componentWillUnmount(){
       document.removeEventListener('paste', this.pasteListener);
     }
-    handleSubmit(event) {
-        event.preventDefault();
-        const formData = {
-          name: this.state.name,
-          description: this.state.description,
-          manufacturer: this.state.manufacturer,
-        }
 
-      
-        // Encoded form parser for sending data in the body
-       
-        console.log(formData);
-        console.log(JSON.stringify(formData));
-    
-        fetch('/api/part', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData),
+    handleSubmit() {
+      if (this.props.part) {
+        modifyPart(this.props.part.id,this.state.name,this.state.description,this.state.manufacturer).then(response=>{
+          console.log(response)
         })
-        .then(response => response.json())
-        .then((data) => {
+      }else{
+        createPart(this.state.name,this.state.description,this.state.manufacturer).then((data) => {
           if(data.error){
             this.setState({error: data.error})
           }else{
@@ -70,11 +69,15 @@ constructor(props) {
           }
            
         })
+      }
+      if (this.props.onDone) {
+        this.props.onDone()
+      }
     }
 
   render() {
     return (
-      <Form onSubmit={(e)=>{this.handleSubmit(e)}}>
+      <Form autoComplete="off">
         {(this.state.error) 
                 ?   <Alert color="danger">
                         {this.state.error}
@@ -103,7 +106,7 @@ constructor(props) {
           <Input type="file" name="altiumFile" id="altiumFile" onChange={(e)=>{this.setState({altiumFile:e.target.files})}}/>
         </FormGroup>
         
-        <Button>Submit</Button>
+        <Button onClick={()=>{this.handleSubmit()}} color="success">{(this.props.part) ? "Modify part" : "Create Part"}</Button>
       </Form>
     );
   }
