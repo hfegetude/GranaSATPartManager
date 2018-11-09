@@ -1,7 +1,7 @@
 const crypto = require('crypto')
 const logger = require('./logger.js')
 const fs = require('fs');
-
+const axios = require('axios');
 
 var db = require('./dbConnect')
 
@@ -113,10 +113,13 @@ dbManager.prototype.getPart = function (user, data) {
 
 dbManager.prototype.postPart = function (user, data) {
     return new Promise((resolve, reject) => {
+        var t = this
+
         if(data.name == null || (data.name && data.name.length == 0)){
             data.name = null
             return reject("Creation error: probably name must be filled.")
         }
+
         db.query("INSERT INTO parts (name,description,manufacturer,creator) VALUES (?,?,?,?)",
             [data.name, data.description, data.manufacturer,user.id],
             function (error, results, fields) {
@@ -125,6 +128,13 @@ dbManager.prototype.postPart = function (user, data) {
                     return reject("Creation error: probably name in use.")
                 } else {
                     data.id = results.insertId
+
+                    if (data.datasheet) {
+                        axios.get(data.datasheet).then(response => {
+                            t.postPartFiles(user,data.id,response,null)
+                        })
+                    }
+
                     return resolve(data)
                 }
             }) 
@@ -269,9 +279,10 @@ dbManager.prototype.searchStock = function (user, data) {
     })
 }
 
-dbManager.prototype.postStock = function (user, data) {
+dbManager.prototype.postStock = async function (user, data) {
     return new Promise((resolve, reject) => {
         var t = this
+
         db.query("INSERT INTO stock (part,vendor,storageplace,url,creator) VALUES (?,?,?,?,?)",
             [data.part.id,data.vendor.id,data.storageplace.id,data.url,user.id],
             function (error, results, fields) {
