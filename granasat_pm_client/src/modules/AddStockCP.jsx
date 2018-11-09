@@ -9,7 +9,7 @@ import { faFilePdf } from '@fortawesome/free-solid-svg-icons'
 
 import TransactionModal from './TransactionModal'
 import clipboardPasteProxy from '../utils/PasteProxy'
-import {getPart,createPart,createVendor,getStock,createStock, getPart} from '../utils/apiUtilities' 
+import {getPart,createPart,createVendor,getStock,createStock} from '../utils/apiUtilities' 
 
 class AddStock extends React.Component {
 constructor(props) {

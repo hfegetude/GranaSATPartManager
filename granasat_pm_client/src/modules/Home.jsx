@@ -19,7 +19,7 @@ class Login extends Component {
           <NavbarBrand href="/">GranaSAT Stock Manager</NavbarBrand>
         </Navbar>
         <Row>
-          <Col md="3">
+          <Col md="2">
           <Nav vertical>
           <NavItem>
             <NavLink href="#" onClick={e => this.setState({selectedScreen:"searchstock"})}>Search Stock</NavLink>
@@ -32,7 +32,7 @@ class Login extends Component {
           </NavItem> 
         </Nav>
           </Col>
-          <Col md="9">
+          <Col md="10">
             {(this.state.selectedScreen === "searchstock") ? <SearchStock></SearchStock> : null}
             {(this.state.selectedScreen === "createpart") ? <AddPart></AddPart> : null}
             {(this.state.selectedScreen === "createstock") ? <AddStock></AddStock> : null}

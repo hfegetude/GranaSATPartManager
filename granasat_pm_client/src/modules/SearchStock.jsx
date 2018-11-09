@@ -2,6 +2,9 @@ import React from 'react';
 import { UncontrolledTooltip, Form, FormGroup, Label, Input, Table} from 'reactstrap';
 import {searchStock} from '../utils/apiUtilities' 
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFilePdf } from '@fortawesome/free-solid-svg-icons'
+
 
 class SearchStock extends React.Component {
 constructor(props) {
@@ -45,12 +48,14 @@ constructor(props) {
       <Table>
         <thead>
           <tr>
+            <th></th>
             <th>Part Name</th>
             <th>Description</th>
             <th>Manufacturer</th>
             <th>Vendor</th>
             <th>Storage</th>
             <th>Qty.</th>
+            <th>Datasheet</th>
             <th></th>
           </tr>
         </thead>
@@ -58,7 +63,8 @@ constructor(props) {
         {this.state.results.map(r => {
           r.tooltipOpen = false
           return <tr key={r.id}>
-                    <th scope="row">{r.name}</th>
+                    <td className="align-middle">{(r.image) ? <img src={"images/" + r.image} className="img-fluid"></img>: null}</td>
+                    <th className="align-middle" scope="row">{r.name}</th>
                     <td className="align-middle"><small>{r.description}</small></td>
                     <td className="align-middle">{r.manufacturer}</td>
                     <td className="align-middle">{r.vendorname} <small>{(r.vendorreference) ? "("+r.vendorreference+")" :null}</small></td>
@@ -69,6 +75,7 @@ constructor(props) {
                     </UncontrolledTooltip>
                     :null}
                     <td className="align-middle">{r.quantity}</td>
+                    <td className="align-middle"><a href={"datasheets/" + r.datasheet}><FontAwesomeIcon icon={faFilePdf} /></a></td>
                     <td className="align-middle"><a href={r.url}>Link</a></td>
 
                   </tr>
