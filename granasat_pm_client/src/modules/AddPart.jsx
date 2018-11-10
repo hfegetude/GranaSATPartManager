@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Form, FormGroup, Label, Input, FormText , Alert} from 'reactstrap';
 import clipboardPasteProxy from '../utils/PasteProxy'
 
-import {createPart,modifyPart} from '../utils/apiUtilities' 
+import {createPart,modifyPart} from '../utils/apiUtilities'
 
 
 class AddPart extends React.Component {
@@ -10,7 +10,7 @@ constructor(props) {
     super(props);
 
     if (this.props.part) {
-      this.state = {name:this.props.part.name, 
+      this.state = {name:this.props.part.name,
         description:this.props.part.description,
         manufacturer:this.props.part.manufacturer,
         datasheet: null,
@@ -18,7 +18,7 @@ constructor(props) {
         error: null
       }
     }else{
-      this.state = {name:null, 
+      this.state = {name:null,
           description:null,
           manufacturer:null,
           datasheet: null,
@@ -27,7 +27,7 @@ constructor(props) {
       }
     }
   }
-    
+
     componentDidMount(){
       this.pasteListener= clipboardPasteProxy((data)=>{
         this.setState({
@@ -67,18 +67,22 @@ constructor(props) {
                 })
             }
           }
-           
+
         })
       }
       if (this.props.onDone) {
-        this.props.onDone()
+        this.props.onDone({
+            name: this.state.name,
+            manufacturer: this.state.manufacturer,
+            description: this.state.description
+            })
       }
     }
 
   render() {
     return (
       <Form autoComplete="off">
-        {(this.state.error) 
+        {(this.state.error)
                 ?   <Alert color="danger">
                         {this.state.error}
                     </Alert>
@@ -105,7 +109,7 @@ constructor(props) {
           <Label for="altiumFile">Altium Lib</Label>
           <Input type="file" name="altiumFile" id="altiumFile" onChange={(e)=>{this.setState({altiumFile:e.target.files})}}/>
         </FormGroup>
-        
+
         <Button onClick={()=>{this.handleSubmit()}} color="success">{(this.props.part) ? "Modify part" : "Create Part"}</Button>
       </Form>
     );
