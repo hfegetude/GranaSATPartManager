@@ -7,6 +7,8 @@ cache:
     - node_modules
 script:
   - cd granasat_pm_client
-  - npm install
+  - npm install --save
   - npm test
+  - npm cache clean
+  - npm install --save
   - npm run-script build
