@@ -1,7 +1,12 @@
 language: node_js
-before_install:
+node_js:
+  - 8
+  - 10
+cache:
+  directories:
+    - node_modules
+script:
   - cd granasat_pm_client
   - npm install
-script:
   - npm test
   - npm run-script build
