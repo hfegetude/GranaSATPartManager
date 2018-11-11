@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col,Input, Modal,ModalHeader,ModalBody,ModalFooter,Button,ButtonGroup } from 'reactstrap';
+import {Modal,ModalHeader,ModalBody,ModalFooter,Button,ButtonGroup } from 'reactstrap';
 
 import {modifyStock} from '../utils/apiUtilities' 
 import AddPart from './AddPart'

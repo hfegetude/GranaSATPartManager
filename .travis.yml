@@ -8,6 +8,6 @@ script:
   - cd granasat_pm_client
   - npm -s install
   - npm test
-  - npm run-script build
+  - CI=false npm run-script build
 
 

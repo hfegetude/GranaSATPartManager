@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Table, Input } from 'reactstrap';
+import { Button, Input } from 'reactstrap';
 
 class PartfinderEntry extends Component {
   constructor(props) {
