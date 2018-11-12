@@ -80,10 +80,14 @@ constructor(props) {
       searchVendor:p.name,
       vendorCoincidences: [],
       creationStatus:0})
-    this.props.onSelect({name:p.name, url:p.url})
+    this.props.onSelect(p)
   }
 
-
+  createVendor(){
+    if(this.props.onCreateVendor){
+      this.props.onCreateVendor(this.state.searchVendor)
+    }
+  }
 
   render() {
     return (
@@ -102,11 +106,17 @@ constructor(props) {
 
         {(this.state.vendorCoincidences && this.state.vendorCoincidences.length) ?
           this.state.vendorCoincidences.map(e => <p onClick={c => this.vendorSelect(e)} key={e.id}><b>{e.name}</b> <small>{e.URL}</small></p>)
+          : (this.state.searchVendor && !(this.state.selectedVendor))
+          ? <Alert color="danger"> Vendor {this.state.searchVendor} was not found, would you like to <a href="#" onClick={this.createVendor.bind(this)} >create it? </a></Alert>
           : null}
 
         {(this.state.selectedVendor) ?
             <p>Selected: <b>{this.state.selectedVendor.name}</b> <small>{this.state.selectedVendor.URL}</small></p>
         : null}
+         {((!this.state.searchVendor ) || (this.state.vendorCoincidences && this.state.vendorCoincidences.length)) 
+         ? <Alert color="success"> <a href="#" onClick={this.createVendor.bind(this)} >Create new vendor? </a></Alert>
+         :null
+        }
 
       </Form>
     );

@@ -24,7 +24,6 @@ constructor(props) {
             };
 
     this.partFinderTimeout = null
-    this.vendorFinderTimeout = null
     }
 
 
@@ -67,33 +66,15 @@ constructor(props) {
           this.partSelect(data.data.results[0])
         }else{
           this.setState({selectedPart:null,nameCoincidences:data.data.results})
+          if(this.props.onFind){
+            this.props.onFind(data.data.results)
+          }
+          
         }
       })
     },400)
   }
-
-  vendorFinder(e,autoselect=false){
-    this.setState({searchVendor:e.target.value})
-
-    if (this.vendorFinderTimeout) {
-      clearTimeout(this.partFinderTimeout)
-    }
-
-    this.vendorFinderTimeout = setTimeout(()=>{
-      axios.get('/api/vendor', {
-        params: {
-          name: this.state.searchVendor
-        }
-      }).then((data) => {
-        if (autoselect && data.data.results.length === 1) {
-          this.vendorSelect(data.data.results[0])
-        }else{
-          this.setState({selectedVendor:null,vendorCoincidences:data.data.results})
-        }
-      })
-    },400)
-  }
-
+ 
   partSelect(p){
     this.setState({selectedPart:p,
       searchName:p.name,
@@ -102,8 +83,13 @@ constructor(props) {
     if(this.props.onSelect){
       this.props.onSelect(p);
     }
-
   }
+  createPart(){
+    if(this.props.onCreatePart){
+      this.props.onCreatePart(this.state.searchName)
+    }
+  }
+
 
 
 
@@ -124,11 +110,16 @@ constructor(props) {
 
         {(this.state.nameCoincidences && this.state.nameCoincidences.length && this.state.searchName) ?
           this.state.nameCoincidences.map(e => <p onClick={c => this.partSelect(e)} key={e.id}><b>{e.name}</b> {e.manufacturer} <small>{e.description}</small></p>)
-          : null}
-
+          : (this.state.searchName && !(this.state.selectedPart))
+            ? <Alert color="danger"> {this.state.searchName} was not found, would you like to <a href="#" onClick={this.createPart.bind(this)} >create it? </a></Alert>
+            : null}
         {(this.state.selectedPart) ?
             <p>Selected: <b>{this.state.selectedPart.name}</b> {this.state.selectedPart.manufacturer} <small>{this.state.selectedPart.description}</small></p>
         : null}
+        {((!this.state.searchName ) || (this.state.nameCoincidences && this.state.nameCoincidences.length)) 
+         ? <Alert color="success"> <a href="#" onClick={this.createPart.bind(this)} >Create new part? </a></Alert>
+         :null
+        }
       </Form>
     );
   }

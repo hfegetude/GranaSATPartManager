@@ -8,9 +8,10 @@ import {createPart,modifyPart} from '../utils/apiUtilities'
 class AddPart extends React.Component {
 constructor(props) {
     super(props);
-
+  
     if (this.props.part) {
-      this.state = {name:this.props.part.name,
+      this.state = {
+        name:this.props.part.name,
         description:this.props.part.description,
         manufacturer:this.props.part.manufacturer,
         datasheet: null,
@@ -18,12 +19,19 @@ constructor(props) {
         error: null
       }
     }else{
-      this.state = {name:null,
-          description:null,
-          manufacturer:null,
-          datasheet: null,
-          altiumFile: null,
-          error: null
+      if(this.props.defaultValues){
+        this.state = {
+          name:this.props.defaultValues.name,
+        }
+      }
+      else {
+          this.state = {name:"",
+          description:"",
+          manufacturer:"",
+          datasheet: "",
+          altiumFile: "",
+          error: ""
+        }
       }
     }
   }
@@ -45,38 +53,34 @@ constructor(props) {
     handleSubmit() {
       if (this.props.part) {
         modifyPart(this.props.part.id,this.state.name,this.state.description,this.state.manufacturer).then(response=>{
-          console.log(response)
         })
       }else{
-        createPart(this.state.name,this.state.description,this.state.manufacturer).then((data) => {
-          if(data.error){
-            this.setState({error: data.error})
-          }else{
-            this.setState({error: null});
-            if(this.state.altiumFile || this.state.datasheet){
-                const fileData = new FormData()
-                if(this.state.datasheet){
-                    fileData.append('file', this.state.datasheet[0], "datasheet_"+this.state.datasheet[0].name)
-                }
-                if(this.state.altiumFile){
-                    fileData.append('file', this.state.altiumFile[0], "altium_"+this.state.altiumFile[0].name)
-                }
-                fetch('/api/part/files/'+data.id, {
-                    method: 'POST',
-                    body:fileData,
-                })
-            }
+        createPart(this.state.name,this.state.description,this.state.manufacturer)
+        .then((data) => {
+          console.log(data)
+          this.setState({error: null});
+          if (this.props.onDone) {
+            this.props.onDone(data.data.inserted)
           }
-
+          if(this.state.altiumFile || this.state.datasheet){
+              const fileData = new FormData()
+              if(this.state.datasheet){
+                  fileData.append('file', this.state.datasheet[0], "datasheet_"+this.state.datasheet[0].name)
+              }
+              if(this.state.altiumFile){
+                  fileData.append('file', this.state.altiumFile[0], "altium_"+this.state.altiumFile[0].name)
+              }
+              fetch('/api/part/files/'+data.id, {
+                  method: 'POST',
+                  body:fileData,
+              })
+          }
+        })
+        .catch((error)=>{
+          this.setState({error: "ooops, something went wrong. Maybe part name is already in use"})
         })
       }
-      if (this.props.onDone) {
-        this.props.onDone({
-            name: this.state.name,
-            manufacturer: this.state.manufacturer,
-            description: this.state.description
-            })
-      }
+    
     }
 
   render() {

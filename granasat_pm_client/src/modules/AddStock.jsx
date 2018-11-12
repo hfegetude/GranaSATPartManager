@@ -26,7 +26,11 @@ constructor(props) {
       quantity: 0,
       inseted: null,
       error: null,
-      storageplaces: []
+      storageplaces: [],
+      partsFound: null,
+      createPart: false,
+      createVendor: false,
+
     };
   }
   componentDidMount(){
@@ -44,20 +48,13 @@ constructor(props) {
     })
   }
   createStockFromForm(){
-    console.log("pepwrtf")
-    createStock(this.state.part,this.state.vendor,this.state.vendorCode, this.state.vendorUrl,parseInt(this.state.quantity),this.state.storageplace,this.state.image)
+    createStock(this.state.part,this.state.vendor,this.state.vendorCode, this.state.vendorUrl,parseInt(this.state.quantity),this.state.storageplace.value,this.state.image)
     .then((data) => {
       console.log(data)
-      if (data.data.error) {
-        this.setState({error:data.data.error})
-      }else{
         this.setState({inserted:data.data.inserted})
-      }
     })
     .catch((error)=>{
-      console.log(error);
       this.setState({error:error});
-
     });
   }
   back(){
@@ -82,11 +79,17 @@ constructor(props) {
       <div>
       {(this.state.state === 0)
         ?<div>
-          <h2> Select part </h2>
-          <PartSearchBar onSelect={(p)=>{this.setState({part: p}); console.log(p)}}></PartSearchBar>
-          <h2> Create part </h2>
-          <AddPart onDone={(p)=>{this.setState({part: p}); console.log(p)}}></AddPart>
-          {this.state.part
+          {(this.state.createPart)
+            ?<div>
+              <h2> Create part </h2>
+              <AddPart defaultValues = {{name: this.state.part.name}} onDone={(p)=>{this.setState({part: p})}}></AddPart>
+            </div>
+            :<div>
+            <h2> Select part </h2>
+            <PartSearchBar onCreatePart={(p)=>{this.setState({createPart:true, part: {name: p}});  console.log(p)}} onFind={(p)=>{this.setState({partsFound:p})}} onSelect={(p)=>{this.setState({part: p}); console.log(p)}}></PartSearchBar>
+          </div>
+          }
+          {(this.state.part && this.state.part.description)
             ? <Button size="sm" color="success" onClick={()=>{this.setState({state:1})}}>Next</Button>
             : <Button size="sm" disabled="true">Next</Button>}
         </div>
@@ -94,11 +97,19 @@ constructor(props) {
       }
       {(this.state.state === 1)
         ? <div>
-          <h2> Select vendor </h2>
-          <VendorSearchBar onSelect={(v) => {this.setState({vendor:v})}}></VendorSearchBar>
-          <h2> Create Vendor </h2>
-          <AddVendor onDone={(v) => {this.setState({vendor:v})}}></AddVendor>
-          {this.state.vendor
+          {(this.state.createVendor)
+            ? <div>
+                <h2>Create Vendor </h2>
+                <AddVendor defaultValues = {{name: this.state.vendor.name}} onDone={(v) => {this.setState({vendor:v}) ; console.log(this.state.vendor) }}></AddVendor>
+              </div>
+            : <div>
+                <h2>Select vendor </h2>
+                <VendorSearchBar onCreateVendor={(p)=>{this.setState({createVendor:true, vendor: {name: p}});  console.log(p)}} onSelect={(v) => {this.setState({vendor:v})}}></VendorSearchBar>
+              </div>
+          }
+          
+         
+          {(this.state.vendor && this.state.vendor.url)
             ? <Button size="sm" color="success" onClick={()=>{this.setState({state:2})}}>Next</Button>
             : <Button size="sm" disabled="true">Next</Button>}
         </div>
@@ -150,12 +161,12 @@ constructor(props) {
                  }}></Select>
                </FormGroup>
                {(this.state.inserted)
-                 ? <p>Inserted {JSON.stringify(this.state.inserted)}</p>
+                 ? <Alert color="success"> Data inserted !</Alert>
                  : null
 
                }
                <Button size="m" color="success" onClick={this.createStockFromForm.bind(this)}>Create Stock</Button>
-               <Button size="m" color="success" onClick={this.back.bind(this)}>New Stock</Button>
+               <Button size="m" color="danger" onClick={this.back.bind(this)}>New Stock</Button>
              </Form>
          </div>
         : null
