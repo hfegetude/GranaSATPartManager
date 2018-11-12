@@ -268,8 +268,7 @@ dbManager.prototype.postStoragePlaces = function (user,data,photo) {
 
                     if (photo) {
                         photo = photo.photo
-                        defname = data.photo.split(".")
-                        console.log(defname)
+                        defname = photo.name.split(".")
                         var photoname = "storage_" + data.id + "." + defname[defname.length-1]
                         fs.writeFile('images/' + photoname, photo.data, (err) => {  
                              if (err){
@@ -318,7 +317,7 @@ dbManager.prototype.searchStock = function (user, data) {
             (name LIKE ? \
             OR description LIKE ? \
             OR manufacturer LIKE ? \
-            OR vendorreference LIKE ?)',
+            OR vendorreference LIKE ?) LIMIT 50',
             new Array(4).fill("%" + data.search + "%"),
         function (error, results, fields) {
             if (error) {
@@ -338,8 +337,8 @@ dbManager.prototype.postStock = async function (user, data) {
     return new Promise((resolve, reject) => {
         var t = this
 
-        db.query("INSERT INTO stock (part,vendor,storageplace,url,creator) VALUES (?,?,?,?,?)",
-            [data.part.id,data.vendor.id,data.storageplace.id,data.url,user.id],
+        db.query("INSERT INTO stock (part,vendor,vendorreference,storageplace,url,creator) VALUES (?,?,?,?,?,?)",
+            [data.part.id,data.vendor.id,data.vendorreference,data.storageplace.id,data.url,user.id],
             function (error, results, fields) {
                 if (error) {
                     logger.error(error)
@@ -387,7 +386,7 @@ dbManager.prototype.updateStock = function (user, data) {
 dbManager.prototype.getTransactions = function (user, data) {
     return new Promise((resolve, reject) => {
         db.query('SELECT transactions.datetime,transactions.quantity,CONCAT(users.firstname," ",users.lastname) as user FROM transactions LEFT JOIN users ON transactions.user=users.id WHERE stock=? order by datetime desc',
-            [parseInt(data.stock.id)],
+            [parseInt(data.stock)],
             function (error, results, fields) {
                 if (error) {
                     logger.error(error)
@@ -396,6 +395,42 @@ dbManager.prototype.getTransactions = function (user, data) {
                     resolve(results)
                 }
             }) 
+    })
+}
+
+/****************************************************************/
+/*                      COMMON API FILES                        */
+/****************************************************************/
+
+dbManager.prototype.getFiles = function (user, idpart) {
+    
+}
+
+dbManager.prototype.postFiles = function (user, idpart, files) {
+    return new Promise((resolve, reject) => {
+        if (files && Object.keys(files).length) {
+            var dir = "files/" + idpart 
+            if (!fs.existsSync(dir)){
+                fs.mkdirSync(dir);
+            }
+
+            Object.keys(files).forEach(name => {
+                var e = files[name]
+                console.log(e)
+                logger.log("Inserting file: " + dir + "/" + e.name)
+                fs.writeFile(dir + "/" + e.name, e.data, (err) => {  
+                    if (err){
+                        logger.error("Storage File not saved")
+                   } else {
+                       db.query('INSERT INTO files (part,file,name) VALUES (?,?,?)', 
+                       [idpart,e.name,e.name], function(error, results, fields) {
+                           if (error) logger.error(error);
+                       })
+                   }
+               });
+            });
+        }
+        resolve()  
     })
 }
 

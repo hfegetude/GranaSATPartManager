@@ -373,6 +373,41 @@ router.get('/api/transactions', isAuthenticated, function(req, res) {
     });
 });
 
+/****************************************************************/
+/*                          API FILE                            */
+/****************************************************************/
+
+router.get('/api/files', isAuthenticated, function(req, res) {
+    var user = req.user
+    var data = req.query
+    dbManager.getTransactions(user, data).then((results) => {
+        res.status(200).json({
+            results: results,
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
+});
+
+router.post('/api/files', isAuthenticated, function(req, res) {
+    var user = req.user
+    var data = req.body
+    console.log(data)
+    dbManager.postFiles(user, data.idpart, req.files).then(() => {
+        res.status(200).json({
+            status: "ok",
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
+});
+
 
 
 
