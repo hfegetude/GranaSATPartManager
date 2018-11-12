@@ -254,6 +254,39 @@ dbManager.prototype.getStoragePlaces = function (user) {
             }) 
     })
 }
+
+dbManager.prototype.postStoragePlaces = function (user,data,photo) {
+    return new Promise((resolve, reject) => {
+        db.query("INSERT INTO storageplaces (name,description,creator) VALUES (?,?,?)",
+            [data.name,data.description,user.id],
+            function (error, results, fields) {
+                if (error) {
+                    logger.error(error)
+                    return reject("Storage places insert error.")
+                } else {
+                    data.id = results.insertId
+
+                    if (photo) {
+                        photo = photo.photo
+                        defname = data.photo.split(".")
+                        console.log(defname)
+                        var photoname = "storage_" + data.id + "." + defname[defname.length-1]
+                        fs.writeFile('images/' + photoname, photo.data, (err) => {  
+                             if (err){
+                                 logger.error("Storage Photo not saved")
+                            } else {
+                                db.query('UPDATE storageplaces SET image=? WHERE id=?', [photoname,data.id], function(error, results, fields) {
+                                    if (error) logger.error(error);
+                                })
+                            }
+                        });
+                    }
+
+                    return resolve(results)
+                }
+            }) 
+    })
+}
  
 /****************************************************************/
 /*                      COMMON API STOCK                        */
@@ -347,6 +380,23 @@ dbManager.prototype.updateStock = function (user, data) {
     })
 }
 
+/****************************************************************/
+/*                      COMMON API TRANSACTIONS                 */
+/****************************************************************/
 
+dbManager.prototype.getTransactions = function (user, data) {
+    return new Promise((resolve, reject) => {
+        db.query('SELECT transactions.datetime,transactions.quantity,CONCAT(users.firstname," ",users.lastname) as user FROM transactions LEFT JOIN users ON transactions.user=users.id WHERE stock=? order by datetime desc',
+            [parseInt(data.stock.id)],
+            function (error, results, fields) {
+                if (error) {
+                    logger.error(error)
+                    return reject("Transactions search error.")
+                } else {
+                    resolve(results)
+                }
+            }) 
+    })
+}
 
 module.exports = new dbManager();

@@ -256,13 +256,33 @@ router.post('/api/vendor', isAuthenticated, function(req, res) {
 /*                          API STOR. PLACES                     */
 /****************************************************************/
 
-//PART SEARCH
+//STORAGE SEARCH
 router.get('/api/storageplaces', isAuthenticated, function(req, res) {
     var user = req.user
     
     dbManager.getStoragePlaces(user).then((results) => {
         res.status(200).json({
             results: results,
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
+});
+
+
+//STORAGE CREATE
+router.post('/api/storageplaces', isAuthenticated, function(req, res) {
+    var user = req.user
+    var data = req.body
+    var photo = req.files
+
+    dbManager.postStoragePlaces(user, data, photo).then((inserted) => {
+        res.status(200).json({
+            status: "OK",
+            inserted:inserted
         })
     }).catch((error) => {
         if (error) logger.error(error);
@@ -333,6 +353,27 @@ router.put('/api/stock', isAuthenticated, function(req, res) {
         })
     });
 });
+
+/****************************************************************/
+/*                          API TRANSACTIONS                    */
+/****************************************************************/
+
+router.get('/api/transactions', isAuthenticated, function(req, res) {
+    var user = req.user
+    var data = req.query
+    dbManager.getTransactions(user, data).then((results) => {
+        res.status(200).json({
+            results: results,
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
+});
+
+
 
 
 
