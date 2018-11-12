@@ -1,14 +1,18 @@
 import React from 'react';
-import { Form, FormGroup, Label, Input, Table} from 'reactstrap';
+import { Row, Col, Alert,Form, FormGroup, Label, Input, Table} from 'reactstrap';
 import {searchStock} from '../utils/apiUtilities' 
 
 import { UncontrolledTooltip} from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFilePdf,faLink, faFileArchive, faCog, faHandRock, faArrowDown, faArrowRight, faCalendar } from '@fortawesome/free-solid-svg-icons'
+import { faFilePdf,faLink, faFileArchive, faCog, faHandRock, faArrowDown, faArrowRight, faCalendar, faFolder } from '@fortawesome/free-solid-svg-icons'
 
 import SearchStockItem from './SearchStockItem'
 import TransactionModal from './TransactionModal'
 import PartModifyModal from './PartModifyModal'
+import ShowTransactionsModal from './ShowTransactionsModal'
+import FilesModal from './FilesModal'
+
+
 
 import clipboardPasteProxy from '../utils/PasteProxy'
 
@@ -22,7 +26,9 @@ constructor(props) {
         showTransactionListModal:false,
         transactionstock: null,
         showModifyModal:false,
-        modifypart:null
+        modifypart:null,
+
+        showFilesModal:false
       };
 
       this.searchTimeout = null
@@ -82,15 +88,17 @@ constructor(props) {
           <Input autoFocus={true} type="text" name="search" value={this.state.search} id="search" placeholder="" onChange={(e)=>{this.handleSearch(e.target.value)}}/>
         </FormGroup>
       </Form>
-      {(this.state.results === undefined) ? null : 
-        (this.state.results.length === 0) ? "NOT FOUND" :
+      {(this.state.results === undefined || this.state.search.length === 0) ? null : 
+        (this.state.results.length === 0) ? 
+          <Alert color="danger">
+            {this.state.search} not found :(
+          </Alert>
+        :
         <Table>
         <thead>
           <tr>
             <th></th>
-            <th>Part Name</th>
-            <th>Description</th>
-            <th>Manufacturer</th>
+            <th></th>
             <th>Vendor</th>
             <th>Storage</th>
             <th>Qty.</th>
@@ -101,26 +109,30 @@ constructor(props) {
         {this.state.results.map(r => {
           r.tooltipOpen = false
           return <tr key={r.id}>
-                    <td className="align-middle"><img style={{maxWidth:"70px"}} className="img-thumbnail" src={"images/" + ((r.image) ? r.image : "notfound.png")} className="img-fluid"></img></td>
-                    <th className="align-middle" scope="row">{r.name}</th>
-                    <td className="align-middle"><small>{r.description}</small></td>
-                    <td className="align-middle">{r.manufacturer}</td>
-                    <td className="align-middle">{r.vendorname} <small>{(r.vendorreference) ? "("+r.vendorreference+")" :null}</small></td>
+                    <td style={{maxHeight:"100px",maxWidth:"100px"}} ><img src={"images/" + ((r.image) ? r.image : "notfound.png")} className="img-fluid"></img></td>
+                    <th style={{"width": "30%"}} className="align-middle" scope="row">{r.name}<br/><small><i>({r.manufacturer})</i></small><br/><small>{r.description}</small></th>
+                    <td className="align-middle">{r.vendorname} <br/>  <a href={r.url} target="_blank"><small>{(r.vendorreference) ? r.vendorreference :null}</small></a></td>
                     <td className="align-middle" id={"result"+r.id}>{r.storagename}</td>
                     {(r.storagedescription) ? 
                       <UncontrolledTooltip placement="right" target={"result"+r.id}>
-                      {r.storagedescription}
+                      {r.storagedescription} <br/> 
+                      <img style={{maxHeight:"150px",maxWidth:"150px"}} src={"images/" + ((r.storageimage) ? r.storageimage : "notfound.png")} className="img-fluid"></img>
                     </UncontrolledTooltip>
                     :null}
                     <td className="align-middle">{r.quantity}</td>
-                    <td className="align-middle">
-                      {(r.datasheet) ? <a href={"datasheets/" + r.datasheet} target="_blank" ><FontAwesomeIcon icon={faFilePdf} /></a> : null }
-                      {(r.altiumfiles) ? <a href={"altiumfiles/" + r.altiumfiles} target="_blank" ><FontAwesomeIcon icon={faFileArchive} /></a>: null}
-                      {(r.url) ? <a href={r.url} target="_blank"><FontAwesomeIcon icon={faLink} /></a> : null }
-                      <a href="#" onClick={() => {this.setState({showTransactionModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faHandRock} /></a>
-                      <a href="#" onClick={() => {this.setState({showModifyModal:true,modifypart:{id:r.idpart,manufacturer:r.manufacturer,name:r.name,description:r.description}})}}><FontAwesomeIcon icon={faCog} /></a>
-                      <a href="#" onClick={() => {this.setState({showTransactionListModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faCalendar} /></a>
-
+                    <td style={{"width": "10%"}} className="align-middle">
+                      <Row>
+                        <Col sm="4"><a href="#" onClick={() => {this.setState({showTransactionModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faHandRock} /></a></Col>
+                        <Col sm="4"><a href="#" onClick={() => {this.setState({showModifyModal:true,modifypart:{id:r.idpart,manufacturer:r.manufacturer,name:r.name,description:r.description}})}}><FontAwesomeIcon icon={faCog} /></a></Col>
+                        <Col sm="4"><a href="#" onClick={() => {this.setState({showTransactionListModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faCalendar} /></a></Col>
+                      </Row>
+                      <Row>
+                        <Col sm="4">{(r.datasheet) ? <a href={"datasheets/" + r.datasheet} target="_blank" ><FontAwesomeIcon icon={faFilePdf} /></a> : null }</Col>
+                        <Col sm="4">{(r.url) ? <a href={r.url} target="_blank"><FontAwesomeIcon icon={faLink} /></a> : null }</Col>
+                        {/* <Col sm="4">{(r.altiumfiles) ? <a href={"altiumfiles/" + r.altiumfiles} target="_blank" ><FontAwesomeIcon icon={faFileArchive} /></a>: null}</Col> */}
+                        <Col sm="4"><a href="#" onClick={() => {this.setState({showFilesModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faFolder} /></a></Col>
+                      </Row>
+                      
                       </td>
 
                   </tr>
@@ -146,16 +158,20 @@ constructor(props) {
         }}></TransactionModal>
       : null}
       {(this.state.showTransactionListModal) ? 
-        <TransactionModal stock={this.state.transactionstock} onDone={()=>{
-          this.setState({showTransactionModal:false})
-          this.handleSearch(this.state.search,0)
-        }}></TransactionModal>
+        <ShowTransactionsModal stock={this.state.transactionstock} onDone={()=>{
+          this.setState({showTransactionListModal:false})
+        }}></ShowTransactionsModal>
       : null}
       {(this.state.showModifyModal) ? 
         <PartModifyModal part={this.state.modifypart} onDone={()=>{
           this.setState({showModifyModal:false})
           this.handleSearch(this.state.search,0)
         }}></PartModifyModal>
+      : null}
+      {(this.state.showFilesModal) ? 
+        <FilesModal part={this.state.transactionstock} onDone={()=>{
+          this.setState({showModifyModal:false})
+        }}></FilesModal>
       : null}
       
       </div>

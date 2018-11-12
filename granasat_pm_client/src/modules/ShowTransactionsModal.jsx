@@ -1,14 +1,22 @@
 import React, { Component } from 'react';
 import {Input, Modal,ModalHeader,ModalBody,Table } from 'reactstrap';
 
+import moment from 'moment'
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons'
+
+
 import {getTransactions} from '../utils/apiUtilities' 
 
 
 
-class TransactionModal extends Component {
+class ShowTransactionsModal extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      transactions: []
+    };
 
     this.toggle = this.props.onDone;
     console.log(this.props.stock)
@@ -17,7 +25,7 @@ class TransactionModal extends Component {
 
   componentDidMount(){
     getTransactions(this.props.stock).then(res => {
-      console.log(res.data)
+      this.setState({transactions:res.data.results})
     })
   }
   
@@ -26,26 +34,16 @@ class TransactionModal extends Component {
       <Modal isOpen={true} toggle={this.toggle} className={this.props.className}>
           <ModalHeader toggle={this.toggle}>{this.props.stock.name} <small>({this.props.stock.vendorname})</small></ModalHeader>
           <ModalBody>
-             <Table>
+             <Table size="sm">
              <tbody>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                </tr>
-                <tr>
-                  <th scope="row">2</th>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                  <td>@fat</td>
-                </tr>
-                <tr>
-                  <th scope="row">3</th>
-                  <td>Larry</td>
-                  <td>the Bird</td>
-                  <td>@twitter</td>
-                </tr>
+
+               {this.state.transactions.map((e,i) => {
+                return <tr key={i}>
+                          <td>{moment(e.datetime).format("DD/MM/YY HH:mm")}</td>
+                          <td>{e.user}</td>
+                          <td className={(e.quantity > 0) ? "text-success" : "text-danger"}><FontAwesomeIcon icon={(e.quantity > 0) ? faCaretUp : faCaretDown} /> <b>{(e.quantity > 0) ? e.quantity : -1*e.quantity}</b></td>
+                        </tr>
+               })}
               </tbody>
              </Table>
           </ModalBody>
@@ -54,4 +52,4 @@ class TransactionModal extends Component {
   }
 }
 
-export default TransactionModal;
+export default ShowTransactionsModal;

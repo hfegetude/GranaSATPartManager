@@ -90,7 +90,18 @@ export const createStorage = (name,description, photo) => {
 export const getTransactions = (stock) => {
     return axios.get('/api/transactions', {
         params: {
-            stock: stock,
+            stock: stock.id,
         }
     })
+} 
+
+
+export const postFiles = async (idpart,files) => {
+    const form = new FormData()
+    console.log(files)
+    form.append('idpart', idpart);
+    for (let i = 0; i < files.length; i++) {
+        await form.append('file'+i, files[i]);
+    }
+    return axios.post('/api/files',form)
 } 

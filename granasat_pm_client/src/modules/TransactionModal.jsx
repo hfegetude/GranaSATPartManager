@@ -48,7 +48,7 @@ class TransactionModal extends Component {
           
               <ButtonGroup className="w-100">
                   <Button style={this.buttonStyle} className="w-100" size="lg" color="success" onClick={e => this.handleTransaction(1)}>Add</Button>
-                  <Button style={this.buttonStyle} className="w-100" size="lg" color="danger" onClick={e => this.handleTransaction(-1)}>Remove</Button>
+                  <Button style={this.buttonStyle} className="w-100" size="lg" color="danger" onClick={e => this.handleTransaction(-1)}>Pick</Button>
               </ButtonGroup>
             
           </ModalFooter>

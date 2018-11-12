@@ -7,6 +7,8 @@ import SearchStock from './SearchStock'
 import CreateUser from './CreateUser'
 import AddStorage from './AddStorage';
 
+
+
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -58,8 +60,6 @@ class Login extends Component {
             {(this.state.selectedScreen === "createstockmanual") ? <AddStockManual></AddStockManual> : null}
             {(this.state.selectedScreen === "createuser") ? <CreateUser></CreateUser> : null}
             {(this.state.selectedScreen === "createstorage") ? <AddStorage></AddStorage> : null}
-
-
           </Col>
         </Row>
       </Container>
