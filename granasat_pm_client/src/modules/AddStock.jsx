@@ -109,7 +109,7 @@ constructor(props) {
            <Row>
              <Col md="9">
              <h2> {this.state.part.name} </h2> by {this.state.part.manufacturer+' '}
-             and selled by <a href={this.state.vendor.url}>{this.state.vendor.name} </a>
+             and selled by <a target="_blank" href={this.state.vendor.url}>{this.state.vendor.name} </a>
              </Col>
              { (this.state.vendorImage) ?
                    <Col md="3">

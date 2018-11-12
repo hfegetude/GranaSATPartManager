@@ -9,7 +9,7 @@ import { faFilePdf } from '@fortawesome/free-solid-svg-icons'
 
 import TransactionModal from './TransactionModal'
 import clipboardPasteProxy from '../utils/PasteProxy'
-import {getPart,createPart,createVendor,getStock,createStock} from '../utils/apiUtilities' 
+import {getPart,createPart,createVendor,getStock,createStock,getStorage} from '../utils/apiUtilities' 
 
 class AddStock extends React.Component {
 constructor(props) {
@@ -66,7 +66,7 @@ constructor(props) {
 
       document.addEventListener('paste', this.pasteListener);
 
-      axios.get('/api/storageplaces').then((data) => {
+      getStorage().then((data) => {
         data = data.data.results.map(e => {
           const p = {value : e, label: e.name}
           return p
@@ -162,6 +162,8 @@ constructor(props) {
           found.vendor = this.state.selectedVendor
           found.part = this.state.selectedPart
           found.storageplace = this.state.storageplaces.filter(e => e.value.id === found.storageplace)[0].value
+          found.name = found.part.name
+          found.vendorname = found.vendor.name
           this.setState({foundstock:response.data.results[0]})
         }
       })
@@ -178,10 +180,38 @@ constructor(props) {
     })
   }
 
+  resetState(){
+    this.setState({searchName:null,
+      searchVendor: null,
+      
+      error: null,
+
+      nameCoincidences: null,
+      selectedPart:null,
+
+      vendorCoincidences:null,
+      selectedVendor:null,
+
+      quantity: 0,
+
+      foundstock:null,
+
+      clipboardData: null,
+      createdStock:null,
+
+      showTransactionModal: false,
+  })
+  }
+
   render() {
     return (
 
-      (this.state.createdStock) ? "Created OK" : 
+      (this.state.createdStock) ? 
+      <div>
+          Created OK. <a href="#" onClick={_ => {this.resetState()}}> Create another</a>
+      </div>
+      
+      : 
       <Form autoComplete="off">
         {(this.state.error) 
                 ?   <Alert color="danger">
@@ -215,7 +245,7 @@ constructor(props) {
         {(!this.state.selectedPart && this.state.nameCoincidences && this.state.nameCoincidences.length === 0) ? 
             <p>Part not found: <b>{this.state.clipboardData.manufacturerCode}</b> ({this.state.clipboardData.manufacturer})<br/>
             {(this.state.clipboardData.datasheet) ? 
-            <div>Found PDF:  <a href={this.state.clipboardData.datasheet}><FontAwesomeIcon icon={faFilePdf} /> Datasheet</a><br/></div>
+            <div>Found PDF:  <a href={this.state.clipboardData.datasheet} target="_blank" ><FontAwesomeIcon icon={faFilePdf} /> Datasheet</a><br/></div>
             : null}
             <small>{this.state.clipboardData.description}</small><br/>
             <Button size="sm" color="success" onClick={this.createNotFoundPart.bind(this) }>Create</Button></p>

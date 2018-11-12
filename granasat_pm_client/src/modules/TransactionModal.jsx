@@ -15,8 +15,8 @@ class TransactionModal extends Component {
     this.numberStyle = {
       fontSize: "5rem",
       height: "100%",
-      border: "white",
-      borderColor: "white",
+      // border: "white",
+      // borderColor: "white",
       textAlign: "center",
     }
 
@@ -26,6 +26,7 @@ class TransactionModal extends Component {
     }
 
     this.toggle = this.props.onDone;
+    console.log(this.props.stock)
 
   }
 
@@ -40,7 +41,7 @@ class TransactionModal extends Component {
       <Modal isOpen={true} toggle={this.toggle} className={this.props.className}>
           <ModalHeader toggle={this.toggle}>{this.props.stock.name} <small>({this.props.stock.vendorname})</small></ModalHeader>
           <ModalBody>
-            <Input autofocus="true" style={this.numberStyle} type="number" step="1" value={this.state.quantity} onChange={e => this.setState({quantity:e.target.value})}/>
+            <Input autoFocus={true} style={this.numberStyle} type="number" step="1" value={this.state.quantity} onChange={e => this.setState({quantity:e.target.value})}/>
           </ModalBody>
         
           <ModalFooter className="d-flex justify-content-center">

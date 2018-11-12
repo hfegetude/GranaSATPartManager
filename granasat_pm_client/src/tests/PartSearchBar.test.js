@@ -1,6 +1,5 @@
 import React from 'react'
 import PartSearchBar from '../modules/PartSearchBar'
-import { Col, Row, Button, Form, FormGroup, Label, Input, FormText , Alert} from 'reactstrap';
 import "../setupTests"
 import { shallow } from 'enzyme';
 

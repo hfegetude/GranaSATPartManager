@@ -1,8 +1,6 @@
 import React from 'react';
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 
-
-
 class CreateUser extends React.Component {
 constructor(props) {
     super(props);
@@ -42,7 +40,7 @@ constructor(props) {
 
   render() {
     return (
-      <Form onSubmit={(e)=>{this.handleSubmit(e)}}>
+      <Form autoComplete="off" onSubmit={(e)=>{this.handleSubmit(e)}}>
         <FormGroup>
           <Label for="username">User name</Label>
           <Input type="text" name="username" id="username" placeholder="Your username" onChange={(e)=>{this.setState({username:e.target.value})}}/>
@@ -63,7 +61,7 @@ constructor(props) {
           <Label for="lastname">Second name</Label>
           <Input type="text" name="lastname" id="lastname" placeholder="Doe" onChange={(e)=>{this.setState({lastname:e.target.value})}}/>
         </FormGroup>
-        <Button>Submit</Button>
+        <Button color="success">Create User</Button>
       </Form>
     );
   }

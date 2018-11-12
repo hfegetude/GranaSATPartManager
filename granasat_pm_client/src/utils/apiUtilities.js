@@ -1,5 +1,8 @@
 
 import axios from 'axios'
+// import FormData from 'form-data'
+// const FormData = require('form-data');
+
 
 export const getPart = (search) => {
     return axios.get('/api/part', {
@@ -70,4 +73,24 @@ export const modifyStock = (stock,quantity) => {
 }
 
 
+export const getStorage = () => {
+    return axios.get('/api/storageplaces')
+}
 
+export const createStorage = (name,description, photo) => {
+    const form = new FormData()
+    form.append('name', name);
+    form.append('description', description);
+    if (photo && photo.length) {
+        form.append('photo', photo[0]);
+    }
+    return axios.post('/api/storageplaces', form)
+}
+
+export const getTransactions = (stock) => {
+    return axios.get('/api/transactions', {
+        params: {
+            stock: stock,
+        }
+    })
+} 

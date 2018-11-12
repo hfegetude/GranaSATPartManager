@@ -1,27 +1,61 @@
 import React from 'react';
-import { UncontrolledTooltip, Form, FormGroup, Label, Input, Table} from 'reactstrap';
+import { Form, FormGroup, Label, Input, Table} from 'reactstrap';
 import {searchStock} from '../utils/apiUtilities' 
 
+import { UncontrolledTooltip} from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFilePdf,faLink, faFileArchive, faCog, faHandRock } from '@fortawesome/free-solid-svg-icons'
+import { faFilePdf,faLink, faFileArchive, faCog, faHandRock, faArrowDown, faArrowRight, faCalendar } from '@fortawesome/free-solid-svg-icons'
 
+import SearchStockItem from './SearchStockItem'
 import TransactionModal from './TransactionModal'
 import PartModifyModal from './PartModifyModal'
 
+import clipboardPasteProxy from '../utils/PasteProxy'
 
 class SearchStock extends React.Component {
 constructor(props) {
     super(props);
       this.state = {
         search: "",
-        results: [],
+        results: undefined,
         showTransactionModal:false,
+        showTransactionListModal:false,
         transactionstock: null,
         showModifyModal:false,
         modifypart:null
       };
 
       this.searchTimeout = null
+  }
+
+  componentDidMount(){
+    this.pasteListener= clipboardPasteProxy((data)=>{
+      this.handleSearch(data.manufacturerCode,0)
+    });
+    document.addEventListener('paste', this.pasteListener);
+  }
+  componentWillUnmount(){
+    document.removeEventListener('paste', this.pasteListener);
+  }
+
+  groupByVendor(collection) {
+    var groups = {}
+    for (let i = 0; i < collection.length; i++) {
+      const vendor  = collection[i].name;
+      if (groups[vendor]) {
+        groups[vendor].push(collection[i])
+      }else{
+        groups[vendor] = [collection[i]]
+      }
+    }
+    groups = Object.keys(groups).map(k => {
+      if (groups[k].length === 1) {
+        return groups[k][0]
+      } else {
+        return groups[k]
+      }
+    })
+    return groups
   }
 
   handleSearch(s,delay=100){
@@ -33,6 +67,7 @@ constructor(props) {
         this.searchTimeout = setTimeout(()=>{
           searchStock(s).then((data) => {
             this.setState({results:data.data.results}) 
+            // this.setState({results:this.groupByVendor(data.data.results)}) 
           })
         },delay)  
     }) 
@@ -44,11 +79,12 @@ constructor(props) {
         <Form autoComplete="off">
         <FormGroup>
           <Label for="search">Search</Label>
-          <Input autofocus="true" type="text" name="search" value={this.state.search} id="search" placeholder="" onChange={(e)=>{this.handleSearch(e.target.value)}}/>
+          <Input autoFocus={true} type="text" name="search" value={this.state.search} id="search" placeholder="" onChange={(e)=>{this.handleSearch(e.target.value)}}/>
         </FormGroup>
       </Form>
-
-      <Table>
+      {(this.state.results === undefined) ? null : 
+        (this.state.results.length === 0) ? "NOT FOUND" :
+        <Table>
         <thead>
           <tr>
             <th></th>
@@ -65,7 +101,7 @@ constructor(props) {
         {this.state.results.map(r => {
           r.tooltipOpen = false
           return <tr key={r.id}>
-                    <td className="align-middle">{(r.image) ? <img style={{maxWidth:"70px"}} className="img-thumbnail" src={"images/" + r.image} className="img-fluid"></img>: null}</td>
+                    <td className="align-middle"><img style={{maxWidth:"70px"}} className="img-thumbnail" src={"images/" + ((r.image) ? r.image : "notfound.png")} className="img-fluid"></img></td>
                     <th className="align-middle" scope="row">{r.name}</th>
                     <td className="align-middle"><small>{r.description}</small></td>
                     <td className="align-middle">{r.manufacturer}</td>
@@ -78,11 +114,13 @@ constructor(props) {
                     :null}
                     <td className="align-middle">{r.quantity}</td>
                     <td className="align-middle">
-                      {(r.datasheet) ? <a href={"datasheets/" + r.datasheet}><FontAwesomeIcon icon={faFilePdf} /></a> : null }
-                      {(r.altiumfiles) ? <a href={"altiumfiles/" + r.altiumfiles}><FontAwesomeIcon icon={faFileArchive} /></a>: null}
-                      {(r.url) ? <a href={r.url}><FontAwesomeIcon icon={faLink} /></a> : null }
+                      {(r.datasheet) ? <a href={"datasheets/" + r.datasheet} target="_blank" ><FontAwesomeIcon icon={faFilePdf} /></a> : null }
+                      {(r.altiumfiles) ? <a href={"altiumfiles/" + r.altiumfiles} target="_blank" ><FontAwesomeIcon icon={faFileArchive} /></a>: null}
+                      {(r.url) ? <a href={r.url} target="_blank"><FontAwesomeIcon icon={faLink} /></a> : null }
                       <a href="#" onClick={() => {this.setState({showTransactionModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faHandRock} /></a>
                       <a href="#" onClick={() => {this.setState({showModifyModal:true,modifypart:{id:r.idpart,manufacturer:r.manufacturer,name:r.name,description:r.description}})}}><FontAwesomeIcon icon={faCog} /></a>
+                      <a href="#" onClick={() => {this.setState({showTransactionListModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faCalendar} /></a>
+
                       </td>
 
                   </tr>
@@ -91,8 +129,23 @@ constructor(props) {
                   
         })}
         </tbody>
+
+         {/* {this.state.results.map((r,i) => {
+          return <SearchStockItem key={"ssi" + i} item={r} setParentState={ps => {
+            console.log(ps)
+            this.setState(ps)}}></SearchStockItem>        
+        })} */}
+
       </Table>
+      }
+      
       {(this.state.showTransactionModal) ? 
+        <TransactionModal stock={this.state.transactionstock} onDone={()=>{
+          this.setState({showTransactionModal:false})
+          this.handleSearch(this.state.search,0)
+        }}></TransactionModal>
+      : null}
+      {(this.state.showTransactionListModal) ? 
         <TransactionModal stock={this.state.transactionstock} onDone={()=>{
           this.setState({showTransactionModal:false})
           this.handleSearch(this.state.search,0)
@@ -104,6 +157,7 @@ constructor(props) {
           this.handleSearch(this.state.search,0)
         }}></PartModifyModal>
       : null}
+      
       </div>
       
     );

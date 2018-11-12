@@ -31,7 +31,6 @@ class Login extends Component {
       if(data.status === "OK"){
         fetch('/api/whoami')
           .then(response => response.json()).then((data) => {
-          console.log(data)
           this.props.onLogged(data);
         })   
       }
@@ -46,10 +45,10 @@ class Login extends Component {
             <FormGroup>
               <Label>Username</Label>
               <Input
-                type="email"
+                type="input"
                 name="email"
                 id="exampleEmail"
-                placeholder="myemail@email.com"
+                placeholder="Insert username"
                 onChange={(e)=>{this.setState({user:e.target.value})}}
               />
             </FormGroup>
@@ -60,8 +59,8 @@ class Login extends Component {
               <Input
                 type="password"
                 name="password"
-                id="examplePassword"
-                placeholder="********"
+                id="password"
+                placeholder="Insert password"
                 onChange={(e)=>{this.setState({pass:e.target.value})}}
             />
             </FormGroup>
