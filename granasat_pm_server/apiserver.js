@@ -72,6 +72,7 @@ passport.deserializeUser(dbManager.getPassportUser);
 /*                      STATIC                                  */
 /****************************************************************/
 
+router.use('/public', express.static(path.join(__dirname, '../granasat_pm_client/publi')));
 router.use('/static', express.static(path.join(__dirname, '../granasat_pm_client/build/static')));
 router.use('/images', express.static('images'));
 router.use('/files', express.static('files'));
