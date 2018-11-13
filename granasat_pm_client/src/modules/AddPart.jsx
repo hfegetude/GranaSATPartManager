@@ -57,26 +57,11 @@ constructor(props) {
       }else{
         createPart(this.state.name,this.state.description,this.state.manufacturer)
         .then((data) => {
-          console.log(data)
           this.setState({error: null});
           if (this.props.onDone) {
             this.props.onDone(data.data.inserted)
           }
-          if(this.state.altiumFile || this.state.datasheet){
-              const fileData = new FormData()
-              if(this.state.datasheet){
-                  fileData.append('file', this.state.datasheet[0], "datasheet_"+this.state.datasheet[0].name)
-              }
-              if(this.state.altiumFile){
-                  fileData.append('file', this.state.altiumFile[0], "altium_"+this.state.altiumFile[0].name)
-              }
-              fetch('/api/part/files/'+data.id, {
-                  method: 'POST',
-                  body:fileData,
-              })
-          }
-        })
-        .catch((error)=>{
+        }).catch((error)=>{
           this.setState({error: "ooops, something went wrong. Maybe part name is already in use"})
         })
       }
@@ -104,14 +89,6 @@ constructor(props) {
         <FormGroup>
           <Label for="manufacturer">Manufacturer</Label>
           <Input type="text" name="manufacturer" value={this.state.manufacturer}  id="manufacturer" placeholder="" onChange={(e)=>{this.setState({manufacturer:e.target.value})}}/>
-        </FormGroup>
-        <FormGroup>
-          <Label for="datasheet">Datasheet</Label>
-          <Input type="file" name="datasheet" id="datasheet" onChange={(e)=>{this.setState({datasheet:e.target.files})}}/>
-        </FormGroup>
-        <FormGroup>
-          <Label for="altiumFile">Altium Lib</Label>
-          <Input type="file" name="altiumFile" id="altiumFile" onChange={(e)=>{this.setState({altiumFile:e.target.files})}}/>
         </FormGroup>
 
         <Button onClick={()=>{this.handleSubmit()}} color="success">{(this.props.part) ? "Modify part" : "Create Part"}</Button>

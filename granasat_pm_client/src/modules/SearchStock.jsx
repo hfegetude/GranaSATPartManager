@@ -122,15 +122,15 @@ constructor(props) {
                     <td className="align-middle">{r.quantity}</td>
                     <td style={{"width": "10%"}} className="align-middle">
                       <Row>
-                        <Col sm="4"><a href="#" onClick={() => {this.setState({showTransactionModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faHandRock} /></a></Col>
-                        <Col sm="4"><a href="#" onClick={() => {this.setState({showModifyModal:true,modifypart:{id:r.idpart,manufacturer:r.manufacturer,name:r.name,description:r.description}})}}><FontAwesomeIcon icon={faCog} /></a></Col>
-                        <Col sm="4"><a href="#" onClick={() => {this.setState({showTransactionListModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faCalendar} /></a></Col>
+                        <Col sm="6"><a href="#" onClick={() => {this.setState({showTransactionModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faHandRock} /></a></Col>
+                        <Col sm="6"><a href="#" onClick={() => {this.setState({showModifyModal:true,modifypart:{id:r.idpart,manufacturer:r.manufacturer,name:r.name,description:r.description}})}}><FontAwesomeIcon icon={faCog} /></a></Col>
                       </Row>
                       <Row>
-                        <Col sm="4">{(r.datasheet) ? <a href={"datasheets/" + r.datasheet} target="_blank" ><FontAwesomeIcon icon={faFilePdf} /></a> : null }</Col>
-                        <Col sm="4">{(r.url) ? <a href={r.url} target="_blank"><FontAwesomeIcon icon={faLink} /></a> : null }</Col>
-                        {/* <Col sm="4">{(r.altiumfiles) ? <a href={"altiumfiles/" + r.altiumfiles} target="_blank" ><FontAwesomeIcon icon={faFileArchive} /></a>: null}</Col> */}
-                        <Col sm="4"><a href="#" onClick={() => {this.setState({showFilesModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faFolder} /></a></Col>
+                        <Col sm="6"><a href="#" onClick={() => {this.setState({showTransactionListModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faCalendar} /></a></Col>
+                        <Col sm="6"><a href="#" onClick={() => {this.setState({showFilesModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faFolder} /></a></Col>
+                      </Row>
+                      <Row>
+                        {(r.datasheet) ? <Col sm="6"><a href={"files/" + r.idpart + "/" + r.datasheet} target="_blank" ><FontAwesomeIcon icon={faFilePdf} /></a></Col>: null}
                       </Row>
                       
                       </td>
@@ -170,7 +170,7 @@ constructor(props) {
       : null}
       {(this.state.showFilesModal) ? 
         <FilesModal part={this.state.transactionstock} onDone={()=>{
-          this.setState({showModifyModal:false})
+          this.setState({showFilesModal:false})
         }}></FilesModal>
       : null}
       

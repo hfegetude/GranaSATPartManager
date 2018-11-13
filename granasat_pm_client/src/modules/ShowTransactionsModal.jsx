@@ -19,7 +19,6 @@ class ShowTransactionsModal extends Component {
     };
 
     this.toggle = this.props.onDone;
-    console.log(this.props.stock)
 
   }
 

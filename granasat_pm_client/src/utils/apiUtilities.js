@@ -69,7 +69,7 @@ export const createStock = (part,vendor,vendorreference,url,quantity,storageplac
 export const modifyStock = (stock,quantity) => {
     return axios.put('/api/stock', 
           {stock: stock,
-            quantity: quantity})
+           quantity: quantity})
 }
 
 
@@ -95,6 +95,12 @@ export const getTransactions = (stock) => {
     })
 } 
 
+export const getFiles = async (idpart) => {
+    return axios.get('/api/files', {
+        params: {
+            idpart: idpart,
+        }
+    })} 
 
 export const postFiles = async (idpart,files) => {
     const form = new FormData()
