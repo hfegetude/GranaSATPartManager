@@ -242,7 +242,7 @@ constructor(props) {
           this.state.nameCoincidences.map(e => <p onClick={c => {this.partSelect(e)}} key={e.id}><b>{e.name}</b> {e.manufacturer} <small>{e.description}</small></p>)
           : null}
 
-        {(!this.state.selectedPart && this.state.nameCoincidences && this.state.nameCoincidences.length === 0) ? 
+        {(!this.state.selectedPart && this.state.clipboardData) ? 
             <p>Part not found: <b>{this.state.clipboardData.manufacturerCode}</b> ({this.state.clipboardData.manufacturer})<br/>
             {(this.state.clipboardData.datasheet) ? 
             <div>Found PDF:  <a href={this.state.clipboardData.datasheet} target="_blank" ><FontAwesomeIcon icon={faFilePdf} /> Datasheet</a><br/></div>
