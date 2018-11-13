@@ -9,3 +9,4 @@
 **/*.rar
 
 copyToProduction.sh
+copyDataBase.sh

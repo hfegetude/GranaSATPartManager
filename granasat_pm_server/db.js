@@ -129,9 +129,17 @@ dbManager.prototype.postPart = function (user, data) {
                     data.id = results.insertId
 
                     if (data.datasheet) {
-                        axios.get(data.datasheet).then(response => {
-                            response.name = "datasheet.pdf"
-                            this.appendFile(user, data.id, response, "datasheet.pdf")
+                        var dir = "files/" + data.id
+                        if (!fs.existsSync(dir)) {
+                            fs.mkdirSync(dir);
+                        }
+
+                        axios({
+                            'url': data.datasheet,
+                            'responseType': 'stream'
+                        }).then(response => {
+                            response.data.pipe(fs.createWriteStream(dir + "/datasheet.pdf"))
+                            db.query('INSERT INTO files (part,file,name,creator) VALUES (?,?,?,?)',[data.id, "datasheet.pdf", "datasheet.pdf", user.id])
                         })
                     }
 
@@ -312,6 +320,7 @@ dbManager.prototype.postStock = async function (user, data) {
 
                     if (data.image) {
                         var imagename = data.image.split("/")
+                        imagename = imagename[imagename.length - 1].split("?")[0]
                         imagename = data.id + "." + imagename[imagename.length - 1].split(".")[1]
                         axios({
                             'url': data.image,

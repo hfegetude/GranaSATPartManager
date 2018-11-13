@@ -2,7 +2,7 @@
   "name": "granasat_pm_client",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://granasat2.ugr.es:9876/",
+  "proxy": "http://localhost:9876/",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.8",
     "@fortawesome/free-solid-svg-icons": "^5.5.0",

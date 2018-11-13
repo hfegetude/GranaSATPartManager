@@ -7,7 +7,7 @@ var helmet = require('helmet')
 app.use(helmet())
 
 
-var HOST = '0.0.0.0';
+var HOST = '127.0.0.1';
 var WEBPORT = 9876;
 
 app.use(require('./apiserver.js'));
