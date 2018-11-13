@@ -21,7 +21,6 @@ constructor(props) {
       vendorCode:null,
       vendorUrl:null,
       vendorImage: null,
-      quantity:null,
       storageplace: null,
       quantity: 0,
       inseted: null,
@@ -48,7 +47,7 @@ constructor(props) {
     })
   }
   createStockFromForm(){
-    createStock(this.state.part,this.state.vendor,this.state.vendorCode, this.state.vendorUrl,parseInt(this.state.quantity),this.state.storageplace.value,this.state.image)
+    createStock(this.state.part,this.state.vendor,this.state.vendorCode, this.state.vendorUrl,parseInt(this.state.quantity),this.state.storageplace.value,this.state.vendorImage)
     .then((data) => {
       console.log(data)
         this.setState({inserted:data.data.inserted})

@@ -14,11 +14,8 @@ class PartModifyModal extends Component {
     this.movePart = React.createRef();
     this.state = {};
     this.toggle = this.props.onDone;
-    console.log(this.props.stock)
-
   }
   doSubmit(){
-    this.movePart.
     this.props.onDone()
   }
   

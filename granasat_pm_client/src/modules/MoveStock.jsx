@@ -8,7 +8,6 @@ import {modifyStockStorage} from '../utils/apiUtilities'
 class MoveStock extends React.Component {
 constructor(props) {
     super(props);
-    console.log(this.props.stock.storagename)
     this.state = {
       storageplace: null,
       storageplaces: [],

@@ -18,17 +18,20 @@ class FilesModal extends Component {
     this.toggle = this.props.onDone;
 
   }
-
-  componentDidMount(){
+  retrieveAvailableFiles(){
     getFiles(this.props.part.idpart).then(response =>{
       this.setState({availablefiles:response.data.results})
     })
+  }
+  componentDidMount(){
+    this.retrieveAvailableFiles()
   }
 
   uploadFiles(){
     this.setState({uploading:true})
     postFiles(this.props.part.idpart,this.state.files).then(response => {
-      this.setState({uploading:false})
+      this.setState({uploading:false,files:[]})
+      this.retrieveAvailableFiles()
     })
   }
 

@@ -127,11 +127,8 @@ constructor(props) {
                         <Col sm="4"><a href="#" onClick={() => {this.setState({showTransactionListModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faCalendar} /></a></Col>
                       </Row>
                       <Row>
-                        <Col sm="6"><a href="#" onClick={() => {this.setState({showTransactionListModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faCalendar} /></a></Col>
-                        <Col sm="6"><a href="#" onClick={() => {this.setState({showFilesModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faFolder} /></a></Col>
-                      </Row>
-                      <Row>
-                        {(r.datasheet) ? <Col sm="6"><a href={"files/" + r.idpart + "/" + r.datasheet} target="_blank" ><FontAwesomeIcon icon={faFilePdf} /></a></Col>: null}
+                        <Col sm="4"><a href="#" onClick={() => {this.setState({showFilesModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faFolder} /></a></Col>
+                        <Col sm="4">{(r.datasheet) ? <a href={"files/" + r.idpart + "/" + r.datasheet} target="_blank" ><FontAwesomeIcon icon={faFilePdf} /></a> : null }</Col>
                       </Row>
                       
                       </td>

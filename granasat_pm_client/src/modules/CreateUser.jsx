@@ -8,7 +8,8 @@ constructor(props) {
                 email:null,
                 password:null,
                 firstname:null,
-                lastname: null
+                lastname: null,
+                usercreated:false
             };
     }
     handleSubmit(event) {
@@ -34,12 +35,14 @@ constructor(props) {
           body: JSON.stringify(formData),
         })
         .then(response => response.json()).then((data) => {
-          console.log(data)
+          this.setState({usercreated:true})
         })
     }
 
   render() {
     return (
+
+      (this.state.usercreated) ? "User created OK" : 
       <Form autoComplete="off" onSubmit={(e)=>{this.handleSubmit(e)}}>
         <FormGroup>
           <Label for="username">User name</Label>

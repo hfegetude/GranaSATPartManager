@@ -53,6 +53,9 @@ constructor(props) {
     handleSubmit() {
       if (this.props.part) {
         modifyPart(this.props.part.id,this.state.name,this.state.description,this.state.manufacturer).then(response=>{
+          if (this.props.onDone) {
+            this.props.onDone()
+          }
         })
       }else{
         createPart(this.state.name,this.state.description,this.state.manufacturer)
