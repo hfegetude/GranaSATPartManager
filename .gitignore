@@ -8,3 +8,4 @@
 **/*.zip
 **/*.rar
 
+copyToProduction.sh

@@ -39,7 +39,7 @@ class Login extends Component {
   render() {
     return (
       <Container className="Login">
-        <h2>Sign In</h2>
+        <h2>Login GranaSAT Part Manager</h2>
         <Form className="form" onSubmit={(e)=>{this.handleSubmit(e)}}>
           <Col>
             <FormGroup>
