@@ -99,7 +99,7 @@ dbManager.prototype.postUsers = function (user, data) {
 dbManager.prototype.getPart = function (user, data) {
     return new Promise((resolve, reject) => {
         db.query("SELECT * FROM parts WHERE name LIKE ? ",
-            ["%"+data.name+"%"],
+            ["%" + data.name + "%"],
             function (error, results, fields) {
                 if (error) {
                     logger.error(error)
@@ -107,22 +107,21 @@ dbManager.prototype.getPart = function (user, data) {
                 } else {
                     return resolve(results)
                 }
-            }) 
+            })
     })
 }
 
 dbManager.prototype.postPart = function (user, data) {
     return new Promise((resolve, reject) => {
-        var t = this
 
-        if(data.name == null || (data.name && data.name.length == 0)){
+        if (data.name == null || (data.name && data.name.length == 0)) {
             data.name = null
             return reject("Creation error: probably name must be filled.")
         }
 
         db.query("INSERT INTO parts (name,description,manufacturer,creator) VALUES (?,?,?,?)",
-            [data.name, data.description, data.manufacturer,user.id],
-            function (error, results, fields) {
+            [data.name, data.description, data.manufacturer, user.id],
+            (error, results, fields) => {
                 if (error) {
                     logger.error(error)
                     return reject("Creation error: probably name in use.")
@@ -131,13 +130,14 @@ dbManager.prototype.postPart = function (user, data) {
 
                     if (data.datasheet) {
                         axios.get(data.datasheet).then(response => {
-                            t.postPartFiles(user,data.id,response,null)
+                            response.name = "datasheet.pdf"
+                            this.appendFile(user, data.id, response, "datasheet.pdf")
                         })
                     }
 
                     return resolve(data)
                 }
-            }) 
+            })
     })
 }
 
@@ -145,13 +145,13 @@ dbManager.prototype.updatePart = function (user, data) {
     return new Promise((resolve, reject) => {
         var t = this
 
-        if(data.name == null || (data.name && data.name.length == 0)){
+        if (data.name == null || (data.name && data.name.length == 0)) {
             data.name = null
             return reject("Creation error: probably name must be filled.")
         }
 
         db.query("UPDATE parts SET name=?,description=?,manufacturer=?,lastUpdated=? WHERE id=?",
-            [data.name, data.description, data.manufacturer,user.id,data.id],
+            [data.name, data.description, data.manufacturer, user.id, data.id],
             function (error, results, fields) {
                 if (error) {
                     logger.error(error)
@@ -159,42 +159,7 @@ dbManager.prototype.updatePart = function (user, data) {
                 } else {
                     return resolve()
                 }
-            }) 
-    })
-}
-
-dbManager.prototype.postPartFiles = function (user, id, datasheet, altium) {
-    return new Promise((resolve, reject) => {
-        // TODO: accept only some extensions
-        if (datasheet) {
-            var datasheetname = id + ".pdf"
-            fs.writeFile('datasheets/' + datasheetname, datasheet.data, (err) => {  
-                 if (err){
-                     logger.error("Datasheet not saved")
-                } else {
-                    db.query('UPDATE parts SET datasheet=? WHERE id=?', [datasheetname,id], function(error, results, fields) {
-                        if (error) logger.error(error);
-                    })
-                }
-
-            });
-        }
-
-        if (altium) {
-            var altiumname = id + "_" +altium.name
-            fs.writeFile('altiumfiles/' + altiumname, altium.data, (err) => {  
-                 if (err){
-                     logger.error("Altium Files not saved")
-                } else {
-                    db.query('UPDATE parts SET altiumfiles=? WHERE id=?', [altiumname,id], function(error, results, fields) {
-                        if (error) logger.error(error);
-                    })
-                }
-
-            });
-        }
-
-        resolve()
+            })
     })
 }
 
@@ -205,7 +170,7 @@ dbManager.prototype.postPartFiles = function (user, id, datasheet, altium) {
 dbManager.prototype.getVendor = function (user, data) {
     return new Promise((resolve, reject) => {
         db.query("SELECT * FROM vendors WHERE name LIKE ? ",
-            ["%"+data.name+"%"],
+            ["%" + data.name + "%"],
             function (error, results, fields) {
                 if (error) {
                     logger.error(error)
@@ -213,13 +178,13 @@ dbManager.prototype.getVendor = function (user, data) {
                 } else {
                     return resolve(results)
                 }
-            }) 
+            })
     })
 }
 
 dbManager.prototype.postVendor = function (user, data) {
     return new Promise((resolve, reject) => {
-        if(data.name == null || (data.name && data.name.length == 0)){
+        if (data.name == null || (data.name && data.name.length == 0)) {
             data.name = null
             return reject("Creation error: probably name must be filled.")
         }
@@ -233,7 +198,7 @@ dbManager.prototype.postVendor = function (user, data) {
                     data.id = results.insertId
                     return resolve(data)
                 }
-            }) 
+            })
     })
 }
 
@@ -251,14 +216,14 @@ dbManager.prototype.getStoragePlaces = function (user) {
                 } else {
                     return resolve(results)
                 }
-            }) 
+            })
     })
 }
 
-dbManager.prototype.postStoragePlaces = function (user,data,photo) {
+dbManager.prototype.postStoragePlaces = function (user, data, photo) {
     return new Promise((resolve, reject) => {
         db.query("INSERT INTO storageplaces (name,description,creator) VALUES (?,?,?)",
-            [data.name,data.description,user.id],
+            [data.name, data.description, user.id],
             function (error, results, fields) {
                 if (error) {
                     logger.error(error)
@@ -269,12 +234,12 @@ dbManager.prototype.postStoragePlaces = function (user,data,photo) {
                     if (photo) {
                         photo = photo.photo
                         defname = photo.name.split(".")
-                        var photoname = "storage_" + data.id + "." + defname[defname.length-1]
-                        fs.writeFile('images/' + photoname, photo.data, (err) => {  
-                             if (err){
-                                 logger.error("Storage Photo not saved")
+                        var photoname = "storage_" + data.id + "." + defname[defname.length - 1]
+                        fs.writeFile('images/' + photoname, photo.data, (err) => {
+                            if (err) {
+                                logger.error("Storage Photo not saved")
                             } else {
-                                db.query('UPDATE storageplaces SET image=? WHERE id=?', [photoname,data.id], function(error, results, fields) {
+                                db.query('UPDATE storageplaces SET image=? WHERE id=?', [photoname, data.id], function (error, results, fields) {
                                     if (error) logger.error(error);
                                 })
                             }
@@ -283,10 +248,10 @@ dbManager.prototype.postStoragePlaces = function (user,data,photo) {
 
                     return resolve(results)
                 }
-            }) 
+            })
     })
 }
- 
+
 /****************************************************************/
 /*                      COMMON API STOCK                        */
 /****************************************************************/
@@ -294,7 +259,7 @@ dbManager.prototype.postStoragePlaces = function (user,data,photo) {
 dbManager.prototype.getStock = function (user, data) {
     return new Promise((resolve, reject) => {
         db.query("SELECT * FROM stock WHERE part=? AND vendor=?",
-            [parseInt(data.part),parseInt(data.vendor)],
+            [parseInt(data.part), parseInt(data.vendor)],
             function (error, results, fields) {
                 if (error) {
                     logger.error(error)
@@ -302,32 +267,33 @@ dbManager.prototype.getStock = function (user, data) {
                 } else {
                     return resolve(results.map(e => {
                         e.part = data.part,
-                        e.vendor = data.vendor
+                            e.vendor = data.vendor
                         return e
                     }))
                 }
-            }) 
+            })
     })
 }
 
 dbManager.prototype.searchStock = function (user, data) {
     return new Promise((resolve, reject) => {
-        if(data.search && data.search !== ""){
+        if (data.search && data.search !== "") {
             db.query('SELECT * FROM stockcomplete WHERE \
             (name LIKE ? \
             OR description LIKE ? \
             OR manufacturer LIKE ? \
-            OR vendorreference LIKE ?) LIMIT 50',
-            new Array(4).fill("%" + data.search + "%"),
-        function (error, results, fields) {
-            if (error) {
-                logger.error(error)
-                return reject("Vendor search error.")
-            } else {
-                return resolve(results)
-            }
-        }) 
-        }else{
+            OR vendorreference LIKE ? \
+            OR storagename LIKE ?) LIMIT 50',
+                new Array(5).fill("%" + data.search + "%"),
+                function (error, results, fields) {
+                    if (error) {
+                        logger.error(error)
+                        return reject("Vendor search error.")
+                    } else {
+                        return resolve(results)
+                    }
+                })
+        } else {
             return resolve([])
         }
     })
@@ -335,11 +301,9 @@ dbManager.prototype.searchStock = function (user, data) {
 
 dbManager.prototype.postStock = async function (user, data) {
     return new Promise((resolve, reject) => {
-        var t = this
-
         db.query("INSERT INTO stock (part,vendor,vendorreference,storageplace,url,creator) VALUES (?,?,?,?,?,?)",
-            [data.part.id,data.vendor.id,data.vendorreference,data.storageplace.id,data.url,user.id],
-            function (error, results, fields) {
+            [data.part.id, data.vendor.id, data.vendorreference, data.storageplace.id, data.url, user.id],
+             (error, results, fields) => {
                 if (error) {
                     logger.error(error)
                     return reject("Vendor search error.")
@@ -348,25 +312,33 @@ dbManager.prototype.postStock = async function (user, data) {
 
                     if (data.image) {
                         var imagename = data.image.split("/")
-                        imagename = data.id + "." + imagename[imagename.length-1].split(".")[1]
-                        db.query('UPDATE stock SET image=? WHERE id=?', [imagename,data.id])
-                        axios({'url' : data.image, 'responseType' : 'stream'}).then( response =>{
+                        imagename = data.id + "." + imagename[imagename.length - 1].split(".")[1]
+                        axios({
+                            'url': data.image,
+                            'responseType': 'stream'
+                        }).then(response => {
                             response.data.pipe(fs.createWriteStream('images/' + imagename))
+                            db.query('UPDATE stock SET image=? WHERE id=?', [imagename, data.id])
                         })
                     }
 
-                    t.updateStock(user,{stock:{id:results.insertId},quantity:data.quantity}).then(()=>{
+                    this.updateStockQuantity(user, {
+                        stock: {
+                            id: results.insertId
+                        },
+                        quantity: data.quantity
+                    }).then(() => {
                         return resolve(data)
                     })
                 }
-            }) 
+            })
     })
 }
 
-dbManager.prototype.updateStock = function (user, data) {
+dbManager.prototype.updateStockQuantity = function (user, data) {
     return new Promise((resolve, reject) => {
         db.query("INSERT INTO transactions (user,stock,quantity) VALUES (?,?,?)",
-            [user.id,data.stock.id,data.quantity],
+            [user.id, data.stock.id, data.quantity],
             function (error, results, fields) {
                 if (error) {
                     logger.error(error)
@@ -375,7 +347,23 @@ dbManager.prototype.updateStock = function (user, data) {
                     data.id = results.insertId
                     return resolve(data)
                 }
-            }) 
+            })
+    })
+}
+
+dbManager.prototype.updateStockStorage = function (user, data) {
+    return new Promise((resolve, reject) => {
+        db.query("UPDATE stock SET storageplace=? WHERE id=?",
+            [data.storageplace.id, data.stock.id],
+            function (error, results, fields) {
+                if (error) {
+                    logger.error(error)
+                    return reject("Transaction insert error.")
+                } else {
+                    data.id = results.insertId
+                    return resolve(data)
+                }
+            })
     })
 }
 
@@ -394,7 +382,7 @@ dbManager.prototype.getTransactions = function (user, data) {
                 } else {
                     resolve(results)
                 }
-            }) 
+            })
     })
 }
 
@@ -402,35 +390,60 @@ dbManager.prototype.getTransactions = function (user, data) {
 /*                      COMMON API FILES                        */
 /****************************************************************/
 
-dbManager.prototype.getFiles = function (user, idpart) {
-    
+dbManager.prototype.appendFile = function (user, idpart, file, name = null) {
+
+    return new Promise((resolve, reject) => {
+        var dir = "files/" + idpart
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir);
+        }
+
+        if (name === null) {
+            name = file.name
+        }
+
+        fs.writeFile(dir + "/" + file.name, file.data, (err) => {
+            if (err) {
+                logger.error("File not saved: " + file.name)
+                reject()
+            } else {
+                db.query('INSERT INTO files (part,file,name,creator) VALUES (?,?,?,?)',
+                    [idpart, file.name, name, user.id],
+                    function (error, results, fields) {
+                        if (error) logger.error(error);
+                        resolve()
+                    })
+            }
+        });
+    })
+}
+
+dbManager.prototype.getFiles = function (user, data) {
+    return new Promise((resolve, reject) => {
+
+        db.query('SELECT files.*,CONCAT(users.firstname," ",users.lastname) as user FROM files LEFT JOIN users ON files.creator=users.id WHERE files.part=?',
+            [parseInt(data.idpart)],
+            function (error, results, fields) {
+                if (error) {
+                    logger.error(error)
+                    return reject("Transactions search error.")
+                } else {
+                    resolve(results)
+                }
+            })
+    })
 }
 
 dbManager.prototype.postFiles = function (user, idpart, files) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         if (files && Object.keys(files).length) {
-            var dir = "files/" + idpart 
-            if (!fs.existsSync(dir)){
-                fs.mkdirSync(dir);
-            }
 
-            Object.keys(files).forEach(name => {
-                var e = files[name]
-                console.log(e)
-                logger.log("Inserting file: " + dir + "/" + e.name)
-                fs.writeFile(dir + "/" + e.name, e.data, (err) => {  
-                    if (err){
-                        logger.error("Storage File not saved")
-                   } else {
-                       db.query('INSERT INTO files (part,file,name) VALUES (?,?,?)', 
-                       [idpart,e.name,e.name], function(error, results, fields) {
-                           if (error) logger.error(error);
-                       })
-                   }
-               });
+            await Object.keys(files).forEach( name => {
+                var file = files[name]
+                this.appendFile(user, idpart, file, file.name)
             });
         }
-        resolve()  
+        resolve()
     })
 }
 

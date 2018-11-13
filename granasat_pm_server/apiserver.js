@@ -74,7 +74,7 @@ passport.deserializeUser(dbManager.getPassportUser);
 
 router.use('/static', express.static(path.join(__dirname, '../granasat_pm_client/build/static')));
 router.use('/images', express.static('images'));
-router.use('/datasheets', express.static('datasheets'));
+router.use('/files', express.static('files'));
 router.use('/altiumfiles', isAuthenticated, express.static('altiumfiles'));
 
 /****************************************************************/
@@ -173,36 +173,6 @@ router.put('/api/part', isAuthenticated, function(req, res) {
     var user = req.user
     var data = req.body
     dbManager.updatePart(user, data).then(() => {
-        res.status(200).json({
-            status: "OK",
-        })
-    }).catch((error) => {
-        if (error) logger.error(error);
-        res.status(400).json({
-            error: error
-        })
-    });
-});
-
-//PART FILES
-router.post('/api/part/files/:id', isAuthenticated, function(req, res) {
-    var user = req.user
-    var id = req.params.id
-   
-    var files = []
-
-    if (Array.isArray(req.files.file)) {
-        files = req.files.file
-    }else{
-        files = [req.files.file]
-    }
-    var datasheet = files.filter(e => e.name.startsWith("datasheet_"))
-    datasheet = (datasheet.length) ? datasheet[0] : null
-
-    var altium = files.filter(e => e.name.startsWith("altium_"))
-    altium = (altium.length) ? altium[0] : null
-
-    dbManager.postPartFiles(user, id, datasheet, altium).then((id) => {
         res.status(200).json({
             status: "OK",
         })
@@ -341,7 +311,14 @@ router.post('/api/stock', isAuthenticated, function(req, res) {
 router.put('/api/stock', isAuthenticated, function(req, res) {
     var user = req.user
     var data = req.body
-    dbManager.updateStock(user, data).then((inserted) => {
+    var f = null
+    if (data.hasOwnProperty('quantity')) {
+        f = dbManager.updateStockQuantity
+    }else if(data.hasOwnProperty('storageplace')){
+        f = dbManager.updateStockStorage
+    }
+
+    f(user, data).then((inserted) => {
         res.status(200).json({
             status: "OK",
             inserted:inserted
@@ -352,6 +329,7 @@ router.put('/api/stock', isAuthenticated, function(req, res) {
             error: error
         })
     });
+    
 });
 
 /****************************************************************/
@@ -380,7 +358,22 @@ router.get('/api/transactions', isAuthenticated, function(req, res) {
 router.get('/api/files', isAuthenticated, function(req, res) {
     var user = req.user
     var data = req.query
-    dbManager.getTransactions(user, data).then((results) => {
+    dbManager.getFiles(user, data).then((results) => {
+        res.status(200).json({
+            results: results,
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
+});
+
+router.delete('/api/files', isAuthenticated, function(req, res) {
+    var user = req.user
+    var data = req.query
+    dbManager.getFiles(user, data).then((results) => {
         res.status(200).json({
             results: results,
         })
@@ -395,7 +388,6 @@ router.get('/api/files', isAuthenticated, function(req, res) {
 router.post('/api/files', isAuthenticated, function(req, res) {
     var user = req.user
     var data = req.body
-    console.log(data)
     dbManager.postFiles(user, data.idpart, req.files).then(() => {
         res.status(200).json({
             status: "ok",
@@ -407,9 +399,5 @@ router.post('/api/files', isAuthenticated, function(req, res) {
         })
     });
 });
-
-
-
-
 
 module.exports = router;
