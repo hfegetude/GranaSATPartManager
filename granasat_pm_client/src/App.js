@@ -14,36 +14,10 @@ class App extends Component {
                   user : null};
   }
 
-  // componentDidMount(){
-  //   const formData = {
-  //     username: 'hfegetude',
-  //     password: 'gilipollas'
-  //   }
-  
-  //   // Encoded form parser for sending data in the body
-  //   const encodedForm = Object.keys(formData).map((key) => {
-  //     return encodeURIComponent(key) + '=' + encodeURIComponent(formData[key])
-  //   }).join('&')
+  componentDidMount(){
+    document.title = "GranaSAT Part Manager"
+  }
 
-  //   fetch('/api/login', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/x-www-form-urlencoded',
-  //     },
-  //     body: encodedForm,
-  //     credentials: 'include'
-  //   })
-  //   .then(response => response.json()).then((data) => {
-  //     console.log(data)
-  //     if(data.status === "OK"){
-  //       axios.get('/api/whoami').then((data) => {
-  //         console.log(data.data)
-  //         this.setState({logged: true, user:data});
-  //       })   
-  //     }
-  // })
-  // }
- 
   render() {
     return (
      this.state.logged 
