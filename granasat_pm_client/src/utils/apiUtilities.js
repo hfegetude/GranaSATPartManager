@@ -72,6 +72,11 @@ export const modifyStock = (stock,quantity) => {
             quantity: quantity})
 }
 
+export const modifyStockStorage = (stock, storageplace) => {
+    return axios.put('/api/stock', 
+          {stock: stock,
+            storageplace: storageplace})
+}
 
 export const getStorage = () => {
     return axios.get('/api/storageplaces')

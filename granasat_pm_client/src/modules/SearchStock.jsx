@@ -123,7 +123,7 @@ constructor(props) {
                     <td style={{"width": "10%"}} className="align-middle">
                       <Row>
                         <Col sm="4"><a href="#" onClick={() => {this.setState({showTransactionModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faHandRock} /></a></Col>
-                        <Col sm="4"><a href="#" onClick={() => {this.setState({showModifyModal:true,modifypart:{id:r.idpart,manufacturer:r.manufacturer,name:r.name,description:r.description}})}}><FontAwesomeIcon icon={faCog} /></a></Col>
+                        <Col sm="4"><a href="#" onClick={() => {this.setState({showModifyModal:true,transactionstock:r,modifypart:{id:r.idpart,manufacturer:r.manufacturer,name:r.name,description:r.description}})}}><FontAwesomeIcon icon={faCog} /></a></Col>
                         <Col sm="4"><a href="#" onClick={() => {this.setState({showTransactionListModal:true,transactionstock:r})}}><FontAwesomeIcon icon={faCalendar} /></a></Col>
                       </Row>
                       <Row>
@@ -163,7 +163,7 @@ constructor(props) {
         }}></ShowTransactionsModal>
       : null}
       {(this.state.showModifyModal) ? 
-        <PartModifyModal part={this.state.modifypart} onDone={()=>{
+        <PartModifyModal part={this.state.modifypart} stock={this.state.transactionstock} onDone={()=>{
           this.setState({showModifyModal:false})
           this.handleSearch(this.state.search,0)
         }}></PartModifyModal>
