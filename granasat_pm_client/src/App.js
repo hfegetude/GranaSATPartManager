@@ -14,10 +14,6 @@ class App extends Component {
                   user : null};
   }
 
-  componentDidMount(){
-    document.title = "GranaSAT Part Manager"
-  }
-
   render() {
     return (
      this.state.logged 
