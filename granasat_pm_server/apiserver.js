@@ -75,7 +75,7 @@ passport.deserializeUser(dbManager.getPassportUser);
 
 
 router.use(favicon(path.join(__dirname, '../granasat_pm_client/public/favicon.ico')));
-router.use('/public', express.static());
+router.use('/public', express.static(path.join(__dirname, '../granasat_pm_client/public')));
 router.use('/static', express.static(path.join(__dirname, '../granasat_pm_client/build/static')));
 router.use('/images', express.static('images'));
 router.use('/files', express.static('files'));
