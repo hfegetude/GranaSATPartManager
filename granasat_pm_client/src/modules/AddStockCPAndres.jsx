@@ -43,9 +43,12 @@ constructor(props) {
     
     componentDidMount(){
       this.pasteListener= clipboardPasteProxy((data)=>{
+        data.vendor = "Andres Roldan Stock SL"
+        data.vendorUrl = "www.industriasroldan.com"
+        data.vendorCode = data.manufacturerCode
         this.setState({
           searchName: data.manufacturerCode,
-          searchVendor: "Andres Roldan Stock SL",
+          searchVendor: data.vendor,
           clipboardData: data,
           selectedPart:null,
           selectedVendor:null,
