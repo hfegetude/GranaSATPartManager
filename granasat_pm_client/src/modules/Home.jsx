@@ -59,7 +59,7 @@ class Login extends Component {
             {/* {(this.state.selectedScreen === "createpart") ? <AddPart></AddPart> : null} */}
             {(this.state.selectedScreen === "createstock") ? <AddStock></AddStock> : null}
             {(this.state.selectedScreen === "createstockmanual") ? <AddStockManual></AddStockManual> : null}
-            {(this.state.selectedScreen === "createstockandres") ? <AddStockAndres></SearchStock> : null}
+            {(this.state.selectedScreen === "createstockandres") ? <AddStockAndres></AddStockAndres> : null}
 
             {(this.state.selectedScreen === "createuser") ? <CreateUser></CreateUser> : null}
             {(this.state.selectedScreen === "createstorage") ? <AddStorage></AddStorage> : null}
