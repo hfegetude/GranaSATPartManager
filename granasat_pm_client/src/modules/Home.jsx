@@ -6,7 +6,7 @@ import SearchStock from './SearchStock'
 
 import CreateUser from './CreateUser'
 import AddStorage from './AddStorage';
-
+import AddStockAndres from './AddStockAndres'
 
 
 class Login extends Component {
@@ -18,6 +18,7 @@ class Login extends Component {
       "searchstock": "Search Stock",
       "createstock": "Create Stock",
       "createstockmanual": "Create Stock Manual",
+      "createstockandres": "Create Stock Andrés",
       "createstorage": "Create Storage",
       "createuser": "Create User"
     }
@@ -58,6 +59,8 @@ class Login extends Component {
             {/* {(this.state.selectedScreen === "createpart") ? <AddPart></AddPart> : null} */}
             {(this.state.selectedScreen === "createstock") ? <AddStock></AddStock> : null}
             {(this.state.selectedScreen === "createstockmanual") ? <AddStockManual></AddStockManual> : null}
+            {(this.state.selectedScreen === "createstockandres") ? <AddStockAndres></SearchStock> : null}
+
             {(this.state.selectedScreen === "createuser") ? <CreateUser></CreateUser> : null}
             {(this.state.selectedScreen === "createstorage") ? <AddStorage></AddStorage> : null}
           </Col>

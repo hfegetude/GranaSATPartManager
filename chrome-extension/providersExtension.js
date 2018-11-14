@@ -17,8 +17,10 @@ if(url.includes("rs-online")){
                 }
                 var fab = fabLoc.textContent.trim()
                 var description = document.querySelector("#pagecell > div > div.col-xs-12.prodDescDivLL > div.col-xs-10 > h1").textContent.trim()
-                var price = document.querySelector("#price-break-container > div > div:nth-child(1) > div.topPriceArea > div.current-price > div.product-price > span.price").textContent.trim()
-                var minquantity =document.querySelector("#break-prices-list").children[1].textContent.split(" ")[0]
+                var price = document.querySelector("#price-break-container > div > div:nth-child(1) > div.topPriceArea > div.current-price > div.product-price > span.price") || -1
+                price = (price === -1) ? price : price.textContent.trim()
+                var minquantity =document.querySelector("#break-prices-list") || -1
+                minquantity = (minquantity === -1) ? minquantity : minquantity.children[1].textContent.split(" ")[0]
                 var img = document.querySelector("#mainImage")
                 img = (img) ? img.src : ''
                 return ["RS",url,code,codefab,fab,description,price,minquantity, host,'',img].join("\t");
@@ -35,10 +37,13 @@ if(url.includes("mouser")){
         new ClipboardJS('#copyExcel', {
             text: function(trigger) {
                 var codefab = document.querySelector("#spnManufacturerPartNumber").textContent.trim()
-                var fab = document.querySelector("#lnkManufacturerName").textContent.trim()
+                var fab = document.querySelector("#lnkManufacturerName") || document.querySelector("#spnManufacturerName")
+                fab = fab.textContent.trim()
                 var description = document.querySelector("#spnDescription").textContent.trim()
-                var price = document.querySelector("#pdpPricingAvailability > div.panel-body > div.div-table.pdp-pricing-table > div.div-table-row > .row > div:nth-child(2) > span").textContent.replace("€","").replace(",",".").trim()
-                var minquantity = document.querySelector("#pdpPricingAvailability > div.panel-body > div.div-table.pdp-pricing-table > div.div-table-row > .row > div:nth-child(1)").textContent.trim()
+                var price = document.querySelector("#pdpPricingAvailability > div.panel-body > div.div-table.pdp-pricing-table > div.div-table-row > .row > div:nth-child(2) > span") || -1
+                price = (price === -1) ? price : price.textContent.replace("€","").replace(",",".").trim()
+                var minquantity = document.querySelector("#pdpPricingAvailability > div.panel-body > div.div-table.pdp-pricing-table > div.div-table-row > .row > div:nth-child(1)") || -1
+                minquantity = (minquantity === -1) ? minquantity : minquantity.textContent.trim()
                 var datasheet =document.querySelector("#pdp-datasheet_0")
                 datasheet = (datasheet) ? datasheet.href : ''
                 var img=document.querySelector("#imglink > img")
