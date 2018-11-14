@@ -6,7 +6,7 @@ import SearchStock from './SearchStock'
 
 import CreateUser from './CreateUser'
 import AddStorage from './AddStorage';
-import AddStockAndres from './AddStockAndres'
+import AddStockAndres from './AddStockCPAndres'
 
 
 class Login extends Component {
