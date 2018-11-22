@@ -499,10 +499,10 @@ dbManager.prototype.getProjects = function (user, data) {
 dbManager.prototype.getProjectPart = function (user, data) {
     return new Promise((resolve, reject) => {
         db.query('SELECT parts.*, project_part.quantity, count.available \
-    FROM project_part\
-            LEFT JOIN parts ON parts.id = project_part.part \
-            LEFT JOIN (SELECT part,sum(quantity) as available FROM granasatpartmanager.stock GROUP BY part) count ON count.part=project_part.part\
-    WHERE project = ?',
+                    FROM project_part\
+                            LEFT JOIN parts ON parts.id = project_part.part \
+                            LEFT JOIN (SELECT part,sum(quantity) as available FROM granasatpartmanager.stock GROUP BY part) count ON count.part=project_part.part\
+                    WHERE project = ?',
             [parseInt(data.project)],
             (error, results, fields) => {
                 if (error) {
@@ -516,8 +516,9 @@ dbManager.prototype.getProjectPart = function (user, data) {
 }
 
 dbManager.prototype.updateProject = function (user, data) {
-    return new Promise((resolve, reject) => {        
-        db.query('INSERT INTO project_part (project, part, quantity) VALUES(?, ?, ?) ON DUPLICATE KEY UPDATE quantity=?',
+    return new Promise((resolve, reject) => {
+        if (data.quantity > 0) {
+            db.query('INSERT INTO project_part (project, part, quantity) VALUES(?, ?, ?) ON DUPLICATE KEY UPDATE quantity=?',
             [data.project.id, data.part.id, data.quantity, data.quantity],
             (error, results, fields) => {
                 if (error) {
@@ -527,6 +528,19 @@ dbManager.prototype.updateProject = function (user, data) {
                     return resolve()
                 }
             })
+        }  else{
+            db.query('DELETE FROM project_part WHERE project=? AND part=?',
+            [data.project.id, data.part.id],
+            (error, results, fields) => {
+                if (error) {
+                    logger.error(error)
+                    return reject("Error on update project quantity")
+                } else {
+                    return resolve()
+                }
+            })
+        }   
+        
     })
 }
 
