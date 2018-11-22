@@ -37,7 +37,7 @@ class ProjectsList extends React.Component {
           return <tr onClick={e => {this.props.onProjectSelect(r)}} key={r.id}>
                     <th>{r.name}</th>
                     <td>{r.description}</td>
-                    <td>{r.name}</td>
+                    <td>{r.user}</td>
                     <td>{r.datetime}</td>
                     <td></td>
                   </tr>
