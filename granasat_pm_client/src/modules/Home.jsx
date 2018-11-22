@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { Col, Row, Nav, NavLink, NavItem,Navbar,NavbarBrand, Button, Form, FormGroup, Label, Input, Container } from 'reactstrap';
+
+
 import AddStockManual from './AddStock'
 import AddStock from './AddStockCP'
 import SearchStock from './SearchStock'
-
 import CreateUser from './CreateUser'
 import AddStorage from './AddStorage';
 import AddStockAndres from './AddStockCPAndres'
+import Projects from './Projects'
 
 
 class Login extends Component {
@@ -20,7 +22,8 @@ class Login extends Component {
       "createstockmanual": "Create Stock Manual",
       "createstockandres": "Create Stock Andrés",
       "createstorage": "Create Storage",
-      "createuser": "Create User"
+      "createuser": "Create User",
+      "projects": "Projects"
     }
 
     this.menusUser = {
@@ -63,6 +66,8 @@ class Login extends Component {
 
             {(this.state.selectedScreen === "createuser") ? <CreateUser></CreateUser> : null}
             {(this.state.selectedScreen === "createstorage") ? <AddStorage></AddStorage> : null}
+            {(this.state.selectedScreen === "projects") ? <Projects></Projects> : null}
+
           </Col>
         </Row>
       </Container>

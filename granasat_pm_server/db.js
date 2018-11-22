@@ -111,6 +111,28 @@ dbManager.prototype.getPart = function (user, data) {
     })
 }
 
+dbManager.prototype.searchPart = function (user, data) {
+    return new Promise((resolve, reject) => {
+        if (data.search && data.search !== "") {
+            db.query('SELECT * FROM parts WHERE \
+            (name LIKE ? \
+            OR description LIKE ? \
+            OR manufacturer LIKE ?) LIMIT 50',
+                new Array(3).fill("%" + data.search + "%"),
+                function (error, results, fields) {
+                    if (error) {
+                        logger.error(error)
+                        return reject("Part search error.")
+                    } else {
+                        return resolve(results)
+                    }
+                })
+        } else {
+            return resolve([])
+        }
+    })
+}
+
 dbManager.prototype.postPart = function (user, data) {
     return new Promise((resolve, reject) => {
 
@@ -453,6 +475,58 @@ dbManager.prototype.postFiles = function (user, idpart, files) {
             });
         }
         resolve()
+    })
+}
+
+/****************************************************************/
+/*                      COMMON API PROJECTS                     */
+/****************************************************************/
+
+dbManager.prototype.getProjects = function (user, data) {
+    return new Promise((resolve, reject) => {
+        db.query('SELECT projects.*, CONCAT(users.firstname," ",users.lastname) as user FROM projects LEFT JOIN users ON projects.creator=users.id',
+            (error, results, fields) => {
+                if (error) {
+                    logger.error(error)
+                    return reject("Projects search error.")
+                } else {
+                    return resolve(results)
+                }
+            })
+    })
+}
+
+dbManager.prototype.getProjectPart = function (user, data) {
+    return new Promise((resolve, reject) => {
+        db.query('SELECT parts.*, project_part.quantity, count.available \
+    FROM project_part\
+            LEFT JOIN parts ON parts.id = project_part.part \
+            LEFT JOIN (SELECT part,sum(quantity) as available FROM granasatpartmanager.stock GROUP BY part) count ON count.part=project_part.part\
+    WHERE project = ?',
+            [parseInt(data.project)],
+            (error, results, fields) => {
+                if (error) {
+                    logger.error(error)
+                    return reject("Project part search error.")
+                } else {
+                    return resolve(results)
+                }
+            })
+    })
+}
+
+dbManager.prototype.updateProject = function (user, data) {
+    return new Promise((resolve, reject) => {        
+        db.query('INSERT INTO project_part (project, part, quantity) VALUES(?, ?, ?) ON DUPLICATE KEY UPDATE quantity=?',
+            [data.project.id, data.part.id, data.quantity, data.quantity],
+            (error, results, fields) => {
+                if (error) {
+                    logger.error(error)
+                    return reject("Error on update project quantity")
+                } else {
+                    return resolve()
+                }
+            })
     })
 }
 

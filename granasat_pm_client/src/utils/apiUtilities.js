@@ -12,6 +12,14 @@ export const getPart = (search) => {
       })
 }
 
+export const searchPart = (search) => {
+    return axios.get('/api/part', {
+        params: {
+            search: search
+        }
+      })
+}
+
 export const createPart = (name,description,manufacturer,datasheet) => {
     return axios.post('/api/part', {
         name: name,
@@ -115,4 +123,25 @@ export const postFiles = async (idpart,files) => {
         await form.append('file'+i, files[i]);
     }
     return axios.post('/api/files',form)
+} 
+
+
+export const getProjects = async () => {
+    return axios.get('/api/projects')
+} 
+
+export const getProjectParts = async (project) => {
+    return axios.get('/api/projects', {
+        params: {
+            project: project.id,
+        }
+})}  
+
+
+export const addPartProject = async (project,part,quantity) => {
+    return axios.put('/api/projects', {
+        project: project,
+        part: part,
+        quantity: quantity
+      })
 } 

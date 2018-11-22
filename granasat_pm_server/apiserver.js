@@ -140,10 +140,18 @@ router.post('/api/user', isAuthenticated, function(req, res) {
 /****************************************************************/
 
 //PART SEARCH
+
 router.get('/api/part', isAuthenticated, function(req, res) {
     var user = req.user
     var data = req.query
-    dbManager.getPart(user, data).then((results) => {
+
+    var f = null
+    if (data.hasOwnProperty("search")) {
+        f = dbManager.searchPart
+    }else{
+        f = dbManager.getPart
+    }
+    f(user, data).then((results) => {
         res.status(200).json({
             results: results,
         })
@@ -395,6 +403,51 @@ router.post('/api/files', isAuthenticated, function(req, res) {
     dbManager.postFiles(user, data.idpart, req.files).then(() => {
         res.status(200).json({
             status: "ok",
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
+});
+
+
+
+/****************************************************************/
+/*                          API PROJECTS                        */
+/****************************************************************/
+
+router.get('/api/projects', isAuthenticated, function(req, res) {
+    var user = req.user
+    var data = req.query
+
+    var f = null
+    
+    if (data.hasOwnProperty('project')) {
+        f = dbManager.getProjectPart
+    }else{
+        f = dbManager.getProjects
+    }
+
+    f(user, data).then((results) => {
+        res.status(200).json({
+            results: results,
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
+});
+
+router.put('/api/projects', isAuthenticated, function(req, res) {
+    var user = req.user
+    var data = req.body
+    dbManager.updateProject(user, data).then(() => {
+        res.status(200).json({
+            status: "OK",
         })
     }).catch((error) => {
         if (error) logger.error(error);
