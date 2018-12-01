@@ -10,23 +10,27 @@ constructor(props) {
       this.state = {
         vendorName:this.props.defaultValues.name,
         vendorUrl:null,
-        error: null
+        error: null,
+        done: false
       };
     }
     else{
       this.state = {
         vendorName:null,
         vendorUrl:null,
-        error: null
+        error: null,
+        done: false
+
       };
     }
-    
+
     }
     handleSubmit(event) {
         event.preventDefault();
         createVendor(this.state.vendorName, this.state.vendorUrl)
-        .then((data) => {        
-          this.setState({error: null});
+        .then((data) => {
+          this.setState({error: null, done: true});
+
           this.props.onDone(data.data.inserted)
         })
         .catch((error)=>{
@@ -53,7 +57,7 @@ constructor(props) {
           <Label for="vendorUrl">Vendor URL</Label>
           <Input type="text" name="vendorUrl" id="vendorUrl" placeholder="www.mouser.com" value={this.state.vendorUrl} onChange={(e)=>{this.setState({vendorUrl:e.target.value})}}/>
         </FormGroup>
-        <Button color="success">Create vendor</Button>
+        <Button disabled={(this.state.done) ?"true":"false"} color="success">Create vendor</Button>
       </Form>
     );
   }

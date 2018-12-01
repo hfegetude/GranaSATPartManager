@@ -8,7 +8,8 @@ import {createPart,modifyPart} from '../utils/apiUtilities'
 class AddPart extends React.Component {
 constructor(props) {
     super(props);
-  
+
+
     if (this.props.part) {
       this.state = {
         name:this.props.part.name,
@@ -16,7 +17,8 @@ constructor(props) {
         manufacturer:this.props.part.manufacturer,
         datasheet: null,
         altiumFile: null,
-        error: null
+        error: null,
+        done: false
       }
     }else{
       if(this.props.defaultValues){
@@ -30,7 +32,8 @@ constructor(props) {
           manufacturer:"",
           datasheet: "",
           altiumFile: "",
-          error: ""
+          error: "",
+          done: false
         }
       }
     }
@@ -60,15 +63,16 @@ constructor(props) {
       }else{
         createPart(this.state.name,this.state.description,this.state.manufacturer)
         .then((data) => {
-          this.setState({error: null});
+          this.setState({error: null, done: true});
           if (this.props.onDone) {
+
             this.props.onDone(data.data.inserted)
           }
         }).catch((error)=>{
           this.setState({error: "ooops, something went wrong. Maybe part name is already in use"})
         })
       }
-    
+
     }
 
   render() {
@@ -93,8 +97,11 @@ constructor(props) {
           <Label for="manufacturer">Manufacturer</Label>
           <Input type="text" name="manufacturer" value={this.state.manufacturer}  id="manufacturer" placeholder="" onChange={(e)=>{this.setState({manufacturer:e.target.value})}}/>
         </FormGroup>
+        {!this.state.done
+        ?<Button onClick={()=>{this.handleSubmit()}} color="success">{(this.props.part) ? "Modify part" : "Create Part"}</Button>
+        :<Button disabled="true" color="success">{(this.props.part) ? "Modify part" : "Create Part"}</Button>}
 
-        <Button onClick={()=>{this.handleSubmit()}} color="success">{(this.props.part) ? "Modify part" : "Create Part"}</Button>
+
       </Form>
     );
   }

@@ -64,12 +64,18 @@ constructor(props) {
       vendorCode:null,
       vendorUrl:null,
       vendorImage: null,
-      quantity:null,
       storageplace: null,
       quantity: 0,
       inseted: null,
       error: null,
-    })
+      storageplaces: [],
+      partsFound: null,
+      createPart: false,
+      createVendor: false,
+
+    });
+    this.componentDidMount();
+
   }
 
 
@@ -81,15 +87,15 @@ constructor(props) {
           {(this.state.createPart)
             ?<div>
               <h2> Create part </h2>
-              <AddPart defaultValues = {{name: this.state.part.name}} onDone={(p)=>{this.setState({part: p})}}></AddPart>
+              <AddPart defaultValues = {{name: this.state.createdPart.name}} onDone={(p)=>{this.setState({part: p})}}></AddPart>
             </div>
             :<div>
             <h2> Select part </h2>
-            <PartSearchBar onCreatePart={(p)=>{this.setState({createPart:true, part: {name: p}});  console.log(p)}} onFind={(p)=>{this.setState({partsFound:p})}} onSelect={(p)=>{this.setState({part: p}); console.log(p)}}></PartSearchBar>
+            <PartSearchBar onCreatePart={(p)=>{this.setState({createPart:true, createdPart: {name: p}});  console.log(p)}} onFind={(p)=>{this.setState({partsFound:p})}} onSelect={(p)=>{this.setState({part: p}); console.log(p)}}></PartSearchBar>
           </div>
           }
-          {(this.state.part && this.state.part.description)
-            ? <Button size="sm" color="success" onClick={()=>{this.setState({state:1})}}>Next</Button>
+          {(this.state.part)
+            ? <Button size="sm" color="success" onClick={()=>{this.setState({state:1})}}>Next </Button>
             : <Button size="sm" disabled="true">Next</Button>}
         </div>
         :null
@@ -99,16 +105,16 @@ constructor(props) {
           {(this.state.createVendor)
             ? <div>
                 <h2>Create Vendor </h2>
-                <AddVendor defaultValues = {{name: this.state.vendor.name}} onDone={(v) => {this.setState({vendor:v}) ; console.log(this.state.vendor) }}></AddVendor>
+                <AddVendor defaultValues = {{name: this.state.createdVendor.name}} onDone={(v) => {this.setState({vendor:v}) ; console.log(this.state.vendor) }}></AddVendor>
               </div>
             : <div>
                 <h2>Select vendor </h2>
-                <VendorSearchBar onCreateVendor={(p)=>{this.setState({createVendor:true, vendor: {name: p}});  console.log(p)}} onSelect={(v) => {this.setState({vendor:v})}}></VendorSearchBar>
+                <VendorSearchBar onCreateVendor={(p)=>{this.setState({createVendor:true, createdVendor: {name: p}});  console.log(p)}} onSelect={(v) => {this.setState({vendor:v})}}></VendorSearchBar>
               </div>
           }
-          
-         
-          {(this.state.vendor && this.state.vendor.url)
+
+
+          {(this.state.vendor )
             ? <Button size="sm" color="success" onClick={()=>{this.setState({state:2})}}>Next</Button>
             : <Button size="sm" disabled="true">Next</Button>}
         </div>
@@ -160,12 +166,10 @@ constructor(props) {
                  }}></Select>
                </FormGroup>
                {(this.state.inserted)
-                 ? <Alert color="success"> Data inserted !</Alert>
-                 : null
+                 ? <Alert color="success"> Data inserted! <a href="#" onClick={this.back.bind(this)}> Create new? </a> </Alert> 
+                 : <Button size="m" color="success" onClick={this.createStockFromForm.bind(this)}>Create Stock</Button>
 
                }
-               <Button size="m" color="success" onClick={this.createStockFromForm.bind(this)}>Create Stock</Button>
-               <Button size="m" color="danger" onClick={this.back.bind(this)}>New Stock</Button>
              </Form>
          </div>
         : null
