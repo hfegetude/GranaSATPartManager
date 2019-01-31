@@ -544,4 +544,27 @@ dbManager.prototype.updateProject = function (user, data) {
     })
 }
 
+
+/****************************************************************/
+/*                       PUBLIC API                             */
+/****************************************************************/
+
+dbManager.prototype.getPublicPart = function (data) {
+    return new Promise((resolve, reject) => {
+        db.query('SELECT storageplaces.name, stock.quantity FROM stock \
+                LEFT JOIN parts ON parts.id = stock.part\
+                LEFT JOIN storageplaces ON storageplaces.id = stock.storageplace\
+                WHERE parts.name = ?',
+            [data.partname],
+            (error, results, fields) => {
+                if (error) {
+                    logger.error(error)
+                    return reject("Public part search error.")
+                } else {
+                    return resolve(results)
+                }
+            })
+    })
+}
+
 module.exports = new dbManager();

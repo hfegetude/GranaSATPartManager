@@ -457,4 +457,32 @@ router.put('/api/projects', isAuthenticated, function(req, res) {
     });
 });
 
+
+
+/****************************************************************/
+/*                       PUBLIC API                             */
+/****************************************************************/
+
+router.get('/api/public/part', function(req, res) {
+    var data = req.query
+
+    var f = null
+
+    f = dbManager.getPublicPart
+
+
+    f(data).then((results) => {
+        res.status(200).json({
+            results: results,
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
+});
+
+
+
 module.exports = router;
