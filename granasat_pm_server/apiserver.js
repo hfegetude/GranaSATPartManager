@@ -463,7 +463,7 @@ router.put('/api/projects', isAuthenticated, function(req, res) {
 /*                       PUBLIC API                             */
 /****************************************************************/
 
-router.get('/api/public/part', function(req, res) {
+router.get('/api/public/part', isAuthenticated,function(req, res) {
     var data = req.query
 
     var f = null
