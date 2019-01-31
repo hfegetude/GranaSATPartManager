@@ -250,6 +250,33 @@ dbManager.prototype.getStoragePlaces = function (user) {
     })
 }
 
+dbManager.prototype.getStorageHierachy = function (user,data) {
+    return new Promise((resolve, reject) => {
+        var response = {}
+        db.query(`WITH RECURSIVE hierachy as ( 
+                    SELECT * FROM storageplaces WHERE storageplaces.id=?
+                    UNION ALL 
+                    SELECT storageplaces.* FROM storageplaces, hierachy WHERE storageplaces.id = hierachy.parent)
+                    SELECT * FROM hierachy`, [data.storage],  (error, results, fields) => {
+                if (error) {
+                    logger.error(error)
+                    return reject("Storage parents search error.")
+                } else {
+                    response.parents = results
+                    db.query('SELECT * FROM storageplaces WHERE parent=?',[data.storage],  (error, results, fields) => {
+                    if (error) {
+                        logger.error(error)
+                        return reject("Storage childs search error.")
+                    } else {
+                        response.childs = results
+                        return resolve(response)
+                    }
+                })
+                }
+            })
+    })
+}
+
 dbManager.prototype.postStoragePlaces = function (user, data, photo) {
     return new Promise((resolve, reject) => {
         db.query("INSERT INTO storageplaces (name,description,creator) VALUES (?,?,?)",

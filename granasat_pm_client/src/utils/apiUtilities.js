@@ -90,6 +90,14 @@ export const getStorage = () => {
     return axios.get('/api/storageplaces')
 }
 
+export const getStorageHierachy = (storage) => {
+    return axios.get('/api/storagehierachy',{
+        params: {
+            storage: storage,
+        }
+    })
+}
+
 export const createStorage = (name,description, photo) => {
     const form = new FormData()
     form.append('name', name);

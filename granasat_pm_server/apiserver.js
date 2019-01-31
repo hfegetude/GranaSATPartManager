@@ -254,6 +254,22 @@ router.get('/api/storageplaces', isAuthenticated, function(req, res) {
     });
 });
 
+//HIERACHY SEARCH
+router.get('/api/storagehierachy', isAuthenticated, function(req, res) {
+    var user = req.user
+    var data = req.query
+    dbManager.getStorageHierachy(user,data).then((results) => {
+        res.status(200).json({
+            results: results,
+        })
+    }).catch((error) => {
+        if (error) logger.error(error);
+        res.status(400).json({
+            error: error
+        })
+    });
+});
+
 
 //STORAGE CREATE
 router.post('/api/storageplaces', isAuthenticated, function(req, res) {

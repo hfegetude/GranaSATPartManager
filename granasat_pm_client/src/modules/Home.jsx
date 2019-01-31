@@ -9,6 +9,7 @@ import CreateUser from './CreateUser'
 import AddStorage from './AddStorage';
 import AddStockAndres from './AddStockCPAndres'
 import Projects from './Projects'
+import RecursiveStoragePlace from './RecursiveStoragePlace';
 
 
 class Login extends Component {
@@ -58,6 +59,7 @@ class Login extends Component {
         </Nav>
           </Col>
           <Col md="10">
+          <RecursiveStoragePlace></RecursiveStoragePlace>
             {(this.state.selectedScreen === "searchstock") ? <SearchStock></SearchStock> : null}
             {/* {(this.state.selectedScreen === "createpart") ? <AddPart></AddPart> : null} */}
             {(this.state.selectedScreen === "createstock") ? <AddStock></AddStock> : null}
