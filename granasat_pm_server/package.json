@@ -17,10 +17,14 @@
     "express-fileupload": "^1.0.0",
     "express-session": "^1.15.6",
     "helmet": "^3.14.0",
+    "jsdom": "^14.0.0",
     "moment": "^2.22.2",
     "mysql": "^2.16.0",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
+    "phantom": "^6.2.0",
+    "phantomjs-prebuilt": "^2.1.16",
+    "random-useragent": "^0.3.1",
     "serve-favicon": "^2.5.0"
   }
 }
