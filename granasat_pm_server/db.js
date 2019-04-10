@@ -551,7 +551,7 @@ dbManager.prototype.updateProject = function (user, data) {
 
 dbManager.prototype.getPublicPart = function (data) {
     return new Promise((resolve, reject) => {
-        db.query('SELECT storageplaces.name, stock.quantity, vendors.name, MAX(prices.price) as price FROM stock \
+        db.query('SELECT storageplaces.name as storage, stock.quantity, vendors.name as vendor, MAX(prices.price) as price FROM stock \
         LEFT JOIN parts ON parts.id = stock.part\
         LEFT JOIN vendors ON vendors.id = stock.vendor\
         LEFT JOIN prices ON stock.id = prices.stock\
