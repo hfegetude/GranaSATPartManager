@@ -1,5 +1,6 @@
 const axios = require('axios');
 var fs = require('fs');
+var db = require('../dbConnect')
 
 
 const getPrice = async (part) =>  {
@@ -251,10 +252,19 @@ var main = () => {
     data.forEach(e =>{
         var exactMatch = e[1].SearchResults.Parts.filter(f=> f.MouserPartNumber == e[0])
         if(exactMatch.length){
-            console.log(exactMatch[0])
+            exactMatch = exactMatch[0]
+            exactMatch.PriceBreaks.forEach(price => {
+                // console.log(e[0],price.Quantity,parseFloat(price.Price.split(" ")[0].replace(/,/g, '.')))
+                var aux = parseFloat(price.Price.split(" ")[0].replace(/,/g, '.'))
+                db.query("INSERT INTO prices (stock,price,quantity) VALUES ((SELECT id FROM stock where vendorreference=?),?,?)",
+                [e[0],aux,price.Quantity])
+            })
+
         }else{
             // console.log("Error on " + e)
         }
     }) 
 }
+
+
 main()
