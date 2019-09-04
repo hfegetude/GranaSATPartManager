@@ -8,5 +8,7 @@
 **/*.zip
 **/*.rar
 
+!images/*.*
+
 copyToProduction.sh
 copyDataBase.sh
