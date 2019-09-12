@@ -37,7 +37,16 @@ constructor(props) {
           this.setState({error: "oops, something went wrong, maybe vendor already exists"});
         });
       }
-
+  isStringAndNotEmpty(s){
+    if(typeof s === "string")
+      return !(!s || 0 === s.length)
+    else
+      return false
+  }
+  isInputOk(){
+    return (this.isStringAndNotEmpty(this.state.vendorName ) 
+            &&this.isStringAndNotEmpty(this.state.vendorUrl))
+  }
 
   render() {
     return (
@@ -57,7 +66,11 @@ constructor(props) {
           <Label for="vendorUrl">Vendor URL</Label>
           <Input type="text" name="vendorUrl" id="vendorUrl" placeholder="www.mouser.com" value={this.state.vendorUrl} onChange={(e)=>{this.setState({vendorUrl:e.target.value})}}/>
         </FormGroup>
-        <Button disabled={(this.state.done) ?"true":"false"} color="success">Create vendor</Button>
+        {(this.isInputOk() && !this.state.done)
+        ?<Button color="success">Create vendor</Button>
+        :<Button disabled="true" color="success">Create vendor</Button>
+      }
+        
       </Form>
     );
   }
